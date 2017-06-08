@@ -50,7 +50,6 @@ namespace cml
                 static_assert(std::is_copy_constructible<ValueType>::value, "cml::vector ValueType must be copy constructible");
 
             private: // type helpers:
-                struct marker_type {};
 
             public:
                 // defaulted copy, assignation, ...
@@ -61,8 +60,9 @@ namespace cml
 
                 template<typename... Types>
                 constexpr vector(Types &&... values) noexcept
-                : components{{values...}}
+                : components(init_components<0>(components, std::forward<Types>(values)...))
                 {
+                    static_assert(sizeof...(Types) <= Dim, "Too many parameters for constructor");
                 }
 
                 /// @brief Multi component access using large char at<'xyy'>() will return a three component vector
@@ -90,12 +90,43 @@ namespace cml
                     else if constexpr (sizeof...(Components) == 1)
                         return components[component_index_t<Components..., Dim>::index];
                     else
-                        return vector<sizeof...(Components), ValueType>({components[component_index_t<Components, Dim>::index]...});
+                        return vector<sizeof...(Components), ValueType>(components[component_index_t<Components, Dim>::index]...);
                 }
 
             private: // helpers
-            private:
-                std::array<ValueType, Dim> components = {ValueType()};
+                template<size_t Index, typename... Types>
+                static constexpr std::array<ValueType, Dim> &init_components(std::array<ValueType, Dim> &ar, ValueType v, Types &&... values)
+                {
+                    static_assert(Index < Dim, "Too many parameters for constructor");
+                    ar[Index] = v;
+                    return init_components<Index + 1>(ar, std::forward<Types>(values)...);
+                }
+
+                template<size_t Index, size_t VDim, typename... Types>
+                static constexpr std::array<ValueType, Dim> &init_components(std::array<ValueType, Dim> &ar, vector<VDim, ValueType> v, Types &&... values)
+                {
+                    return init_components<Index>(std::make_index_sequence<VDim>{}, ar, v, std::forward<Types>(values)...);
+                }
+
+                template<typename... X> static inline constexpr void x(X&&...){};
+                template<size_t Index, size_t VDim, size_t... Idxs, typename... Types>
+                static constexpr std::array<ValueType, Dim> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, Dim> &ar, vector<VDim, ValueType> v, Types &&... values)
+                {
+                    static_assert(Index + VDim <= Dim, "Too many parameters for constructor");
+                    x(ar[Index + Idxs] = v.components[Idxs]...);
+                    return init_components<Index + VDim>(ar, std::forward<Types>(values)...);
+                }
+
+                template<size_t Index>
+                static constexpr std::array<ValueType, Dim> &init_components(std::array<ValueType, Dim> &ar)
+                {
+                    // make sure that we never allow code that will trigger a buffer overflow to compile
+                    static_assert(Index <= Dim, "Too many parameters for constructor");
+                    return ar;
+                }
+
+            public: // should be internal
+                std::array<ValueType, Dim> components = {{ValueType()}};
         };
     } // namespace implementation
 } // namespace cml
