@@ -58,11 +58,35 @@ namespace cml
                 constexpr vector& operator = (const vector&) noexcept = default;
                 ~vector() noexcept = default;
 
+                /// @brief Generic construction from either values and vectors (in any position)
                 template<typename... Types>
                 constexpr vector(Types &&... values) noexcept
                 : components(init_components<0>(components, std::forward<Types>(values)...))
                 {
-                    static_assert(sizeof...(Types) <= Dim, "Too many parameters for constructor");
+                }
+
+                /// @brief Cast the vector to any integral type that has the same size (or bigger)
+                template<typename Type>
+                explicit constexpr operator Type() const
+                {
+                    static_assert(std::is_integral<Type>::value); // mostly for SFINAE
+                    static_assert(sizeof(Type) >= sizeof(ValueType) * Dim); // mostly for SFINAE
+                    return convert_to_type<Type>(std::make_index_sequence<Dim>{});
+                }
+
+                /// @brief Safly cast to a vector /... that has a type that will @b not loose any information
+                template<typename Type>
+                constexpr operator vector<Dim, Type>() const
+                {
+                    static_assert(std::is_same<Type, typename std::common_type<Type, ValueType>::type>::value, "casting to another vector with precision loss is forbidden"); // mostly for SFINAE
+                    return convert_to_vector<Type>(std::make_index_sequence<Dim>{});
+                }
+
+                /// @brief Unsafly cast to a vector /... that has a type that will loose some information
+                template<typename Type>
+                constexpr vector<Dim, Type> unsafe_cast() const
+                {
+                    return convert_to_vector<Type>(std::make_index_sequence<Dim>{});
                 }
 
                 /// @brief Multi component access using large char at<'xyy'>() will return a three component vector
@@ -105,15 +129,22 @@ namespace cml
                 template<size_t Index, size_t VDim, typename VType, typename... Types>
                 static constexpr std::array<ValueType, Dim> &init_components(std::array<ValueType, Dim> &ar, const vector<VDim, VType>& v, Types &&... values)
                 {
+                    static_assert(std::is_same<ValueType, typename std::common_type<VType, ValueType>::type>::value, "casting to another vector with precision loss is forbidden");
                     return init_components<Index>(std::make_index_sequence<VDim>{}, ar, v, std::forward<Types>(values)...);
                 }
 
+#ifdef _MSC_VER
                 template<typename... X> static inline constexpr void x(X&&...){};
+#endif
                 template<size_t Index, size_t VDim, typename VType, size_t... Idxs, typename... Types>
                 static constexpr std::array<ValueType, Dim> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, Dim> &ar, const vector<VDim, VType>& v, Types &&... values)
                 {
                     static_assert(Index + VDim <= Dim, "Too many parameters for constructor");
+#ifndef _MSC_VER
+                    ((ar[Index + Idxs] = v.components[Idxs]), ...);
+#else
                     x(ar[Index + Idxs] = v.components[Idxs]...);
+#endif
                     return init_components<Index + VDim>(ar, std::forward<Types>(values)...);
                 }
 
@@ -123,6 +154,24 @@ namespace cml
                     // make sure that we never allow code that will trigger a buffer overflow to compile
                     static_assert(Index <= Dim, "Too many parameters for constructor");
                     return ar;
+                }
+
+                template<typename Type, size_t... Idxs>
+                constexpr Type convert_to_type(std::index_sequence<Idxs...>) const
+                {
+#ifndef _MSC_VER
+                    return ((Type(components[Idxs]) << (Idxs * sizeof(ValueType) * 8)) | ...);
+#else
+                    Type ret = 0;
+                    using ar_t = int[];
+                    (void)(ar_t{ret |= Type(components[Idxs]) << (Idxs * sizeof(ValueType) * 8)...});
+                    return ret;
+#endif
+                }
+                template<typename Type, size_t... Idxs>
+                constexpr vector<Dim, Type> convert_to_vector(std::index_sequence<Idxs...>) const
+                {
+                    return vector<Dim, Type>(Type(components[Idxs])...);
                 }
 
             public: // should be internal
