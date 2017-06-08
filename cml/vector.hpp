@@ -102,15 +102,15 @@ namespace cml
                     return init_components<Index + 1>(ar, std::forward<Types>(values)...);
                 }
 
-                template<size_t Index, size_t VDim, typename... Types>
-                static constexpr std::array<ValueType, Dim> &init_components(std::array<ValueType, Dim> &ar, vector<VDim, ValueType> v, Types &&... values)
+                template<size_t Index, size_t VDim, typename VType, typename... Types>
+                static constexpr std::array<ValueType, Dim> &init_components(std::array<ValueType, Dim> &ar, const vector<VDim, VType>& v, Types &&... values)
                 {
                     return init_components<Index>(std::make_index_sequence<VDim>{}, ar, v, std::forward<Types>(values)...);
                 }
 
                 template<typename... X> static inline constexpr void x(X&&...){};
-                template<size_t Index, size_t VDim, size_t... Idxs, typename... Types>
-                static constexpr std::array<ValueType, Dim> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, Dim> &ar, vector<VDim, ValueType> v, Types &&... values)
+                template<size_t Index, size_t VDim, typename VType, size_t... Idxs, typename... Types>
+                static constexpr std::array<ValueType, Dim> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, Dim> &ar, const vector<VDim, VType>& v, Types &&... values)
                 {
                     static_assert(Index + VDim <= Dim, "Too many parameters for constructor");
                     x(ar[Index + Idxs] = v.components[Idxs]...);
