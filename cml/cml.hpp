@@ -22,8 +22,10 @@
 
 #pragma once
 
+#include "matrix.hpp"
+#include "matrix_operators.hpp"
+
 #include "vector.hpp"
-#include "vector_operators.hpp"
 
 /// @brief Main cml namespace
 namespace cml
