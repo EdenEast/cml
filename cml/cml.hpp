@@ -23,6 +23,7 @@
 #pragma once
 
 #include "vector.hpp"
+#include "vector_operators.hpp"
 
 /// @brief Main cml namespace
 namespace cml

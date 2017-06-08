@@ -49,6 +49,8 @@ namespace cml
                 static_assert(std::is_copy_assignable<ValueType>::value, "cml::vector ValueType must be copy assignable");
                 static_assert(std::is_copy_constructible<ValueType>::value, "cml::vector ValueType must be copy constructible");
 
+                using value_type = ValueType;
+
             private: // type helpers:
 
             public:
@@ -58,10 +60,27 @@ namespace cml
                 constexpr vector& operator = (const vector&) noexcept = default;
                 ~vector() noexcept = default;
 
+                constexpr vector &operator = (ValueType value) noexcept
+                {
+                    assign_value_type(std::make_index_sequence<Dim>{}, value);
+                    return *this;
+                }
+
+                explicit constexpr vector(ValueType value) noexcept
+                : vector(std::make_index_sequence<Dim>{}, value)
+                {
+                }
+
                 /// @brief Generic construction from either values and vectors (in any position)
-                template<typename... Types>
-                constexpr vector(Types &&... values) noexcept
-                : components(init_components<0>(components, std::forward<Types>(values)...))
+                template<typename Type2, typename... Types>
+                constexpr vector(ValueType v1, Type2 v2, Types &&... values) noexcept
+                : components(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
+                {
+                }
+                /// @brief Generic construction from either values and vectors (in any position)
+                template<typename Type1, size_t D1, typename Type2, typename... Types>
+                constexpr vector(const vector<D1, Type1>& v1, Type2 v2, Types &&... values) noexcept
+                : components(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
                 {
                 }
 
@@ -156,6 +175,22 @@ namespace cml
                     return ar;
                 }
 
+                template<size_t... Idxs>
+                constexpr vector(std::index_sequence<Idxs...>, ValueType vt)
+                : components{{((void)Idxs, vt)...}}
+                {}
+
+                template<size_t... Idxs>
+                constexpr void assign_value_type(std::index_sequence<Idxs...>, ValueType vt)
+                {
+#ifndef _MSC_VER
+                    ((components[Idxs] = vt), ...);
+#else
+                    using ar_t = int[];
+                    (void)(ar_t{(components[Idxs] = vt)...});
+#endif
+                }
+
                 template<typename Type, size_t... Idxs>
                 constexpr Type convert_to_type(std::index_sequence<Idxs...>) const
                 {
@@ -179,4 +214,3 @@ namespace cml
         };
     } // namespace implementation
 } // namespace cml
-
