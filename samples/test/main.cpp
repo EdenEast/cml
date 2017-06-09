@@ -42,7 +42,7 @@ int main()
     static_assert(cml::ivec3{4, -5, -3} * cml::imat3::identity() == cml::ivec3{4, -5, -3});
     static_assert(cml::ivec3{4, -5, -3} * (2 * cml::imat3::identity()) == 2 * cml::ivec3{4, -5, -3});
 
-//     static_assert(cml::ivec3{4, -5, -3} * cml::ivec3{4, -5, -3} == cml::ivec3{4*4, -5*-5, -3*-3});
+    static_assert(cml::transpose(cml::ivec3{4, -5, -3}) * cml::ivec3{4, -5, -3} == cml::imat3(4 * cml::ivec3{4, -5, -3}, -5 * cml::ivec3{4, -5, -3}, -3 * cml::ivec3{4, -5, -3}));
 
     static_assert(cml::imat<3, 2>{2, 3, -1, 6, 1, -2} * cml::imat<2, 3>{4, -5, -3, 0, 1, 2} == cml::imat<2, 2>{-2, -12, 19, -34});
 
