@@ -45,10 +45,11 @@ namespace cml
         {
             return matrix<DimX, DimY, VType>{v1.components[Idxs] - v2.components[Idxs]...};
         }
-        template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
-        static constexpr matrix<DimX, DimY, VType> matrix_mm_mul(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
+        template<typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2, size_t... Idxs>
+        static constexpr matrix<DimX1, DimY2, VType> matrix_mm_mul(std::index_sequence<Idxs...>, const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
         {
-            return matrix<DimX, DimY, VType>{v1.components[Idxs] * v2.components[Idxs]...};
+            // TODO
+            return matrix<DimX1, DimY2, VType>{v1.components[Idxs] * v2.components[Idxs]...};
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr matrix<DimX, DimY, VType> matrix_mm_div(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
@@ -82,33 +83,34 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator + (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_mm_add(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_mm_add(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator - (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_mm_sub(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_mm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
-        template<typename VType, size_t DimX, size_t DimY>
-        constexpr matrix<DimX, DimY, VType> operator * (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
+        template<typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2>
+        constexpr matrix<DimX1, DimY2, VType> operator * (const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
         {
-            return matrix_mm_mul(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            static_assert(DimX1 == DimY2, "Cannot multiply matrices when the number of columns of the first matrix is different from the number of rows of the second matrix");
+            return matrix_mm_mul(std::make_index_sequence<DimX1 * DimY2>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator / (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_mm_div(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_mm_div(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         template<typename VType, size_t DimX, size_t DimY>
         constexpr bool operator == (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_mm_eq(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_mm_eq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr bool operator != (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_mm_neq(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_mm_neq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         // matrix - scalar operations
@@ -160,33 +162,33 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator + (const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_ms_add(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_ms_add(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator - (const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_ms_sub(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_ms_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator * (const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_ms_mul(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_ms_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator / (const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_ms_div(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_ms_div(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         template<typename VType, size_t DimX, size_t DimY>
         constexpr bool operator == (const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_ms_eq(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_ms_eq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr bool operator != (const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_ms_neq(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_ms_neq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         // scalar - matrix operations
@@ -238,33 +240,33 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator + (VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_sm_add(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sm_add(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator - (VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_sm_sub(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator * (VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_sm_mul(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sm_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator / (VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_sm_div(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sm_div(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         template<typename VType, size_t DimX, size_t DimY>
         constexpr bool operator == (VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_sm_eq(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sm_eq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr bool operator != (VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_sm_neq(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sm_neq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         // self-matrix - matrix operations
@@ -318,22 +320,22 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator += (matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_smm_add(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_smm_add(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator -= (matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_smm_sub(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_smm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator *= (matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_smm_mul(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_smm_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator /= (matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return matrix_smm_div(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_smm_div(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
 
         // self-matrix - scalar operations
@@ -387,22 +389,22 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator += (matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_sms_add(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sms_add(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator -= (matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_sms_sub(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sms_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator *= (matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_sms_mul(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sms_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator /= (matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return matrix_sms_div(std::make_index_sequence<DimX  * DimY>{}, v1, v2);
+            return matrix_sms_div(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
     } // namespace implementation
 } // namespace cml

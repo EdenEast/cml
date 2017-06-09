@@ -69,6 +69,11 @@ namespace cml
                 {
                 }
 
+                explicit constexpr matrix(const std::array<ValueType, DimX * DimY>& value) noexcept
+                : components{value}
+                {
+                }
+
                 /// @brief Generic construction from either values and matrices (in any position)
                 template<typename Type2, typename... Types>
                 constexpr matrix(ValueType v1, Type2 v2, Types &&... values) noexcept
