@@ -26,7 +26,7 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "component_struct.hpp"
+#include "matrix_components.hpp"
 #include "vector_component_table.hpp"
 
 namespace cml
@@ -42,15 +42,17 @@ namespace cml
         /// @tparam Dim The number of component this matrix have
         /// @tparam ValueType the type of matrix's components
         template<size_t DimX, size_t DimY, typename ValueType>
-        class matrix : public component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>
+        class matrix : public matrix_components<matrix<DimX, DimY, ValueType>>
         {
             private: // a bunch of static asserts:
-                static_assert(DimX * DimY > 1, "cml::matrix dimensions (Dim{X, Y} template parameters) must not be 0 nor 1");
+                static_assert(DimX * DimY > 0, "cml::matrix dimensions (Dim{X, Y} template parameters) must not be 0");
                 static_assert(std::is_default_constructible<ValueType>::value, "cml::matrix ValueType must be default constructible");
                 static_assert(std::is_copy_assignable<ValueType>::value, "cml::matrix ValueType must be copy assignable");
                 static_assert(std::is_copy_constructible<ValueType>::value, "cml::matrix ValueType must be copy constructible");
 
             private: // type helpers:
+                using component_holder = matrix_components<matrix<DimX, DimY, ValueType>>;
+                friend component_holder;
 
             public:
                 // defaulted copy, assignation, ...
@@ -71,20 +73,20 @@ namespace cml
                 }
 
                 explicit constexpr matrix(const std::array<ValueType, DimX * DimY>& value) noexcept
-                : component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>{value}
+                : matrix_components<matrix<DimX, DimY, ValueType>>{value}
                 {
                 }
 
                 /// @brief Generic construction from either values and matrices (in any position)
                 template<typename Type2, typename... Types>
                 constexpr matrix(ValueType v1, Type2 v2, Types &&... values) noexcept
-                : component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
+                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::compiler_marker{}, v1, v2, std::forward<Types>(values)...)
                 {
                 }
                 /// @brief Generic construction from either values and vectors (in any position)
                 template<typename Type1, size_t D1, typename Type2, typename... Types>
                 constexpr matrix(const matrix<D1, 1, Type1>& v1, Type2 v2, Types &&... values) noexcept
-                : component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
+                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::compiler_marker{}, v1, v2, std::forward<Types>(values)...)
                 {
                 }
 
@@ -125,7 +127,7 @@ namespace cml
                     if constexpr (Components == 0)
                         return; // void
                     else if constexpr (Components <= 0xFFu)
-                        return components[component_index_t<static_cast<char>(Components), DimX * DimY>::index];
+                        return this->components[component_index_t<static_cast<char>(Components), DimX * DimY>::index];
                     else if constexpr (Components <= 0xFFFFu)
                         return at_separate<static_cast<char>((Components >> 8) & 0xFF), static_cast<char>((Components >> 0) & 0xFF)>();
                     else if constexpr (Components <= 0xFFFFFFu)
@@ -141,9 +143,9 @@ namespace cml
                     if constexpr (sizeof...(Components) == 0)
                         return; // void
                     else if constexpr (sizeof...(Components) == 1)
-                        return components[component_index_t<Components..., DimX * DimY>::index];
+                        return this->components[component_index_t<Components..., DimX * DimY>::index];
                     else
-                        return matrix<sizeof...(Components), 1, ValueType>(components[component_index_t<Components, DimX * DimY>::index]...);
+                        return matrix<sizeof...(Components), 1, ValueType>(this->components[component_index_t<Components, DimX * DimY>::index]...);
                 }
 
             private: // helpers
@@ -192,7 +194,7 @@ namespace cml
 
                 template<size_t... Idxs>
                 constexpr matrix(std::index_sequence<Idxs...>, ValueType vt)
-                : component_struct<DimX, DimY, ValueType>{{((void)Idxs, vt)...}}
+                : matrix_components<matrix<DimX, DimY, ValueType>>{((void)Idxs, vt)...}
                 {}
 
                 template<size_t... Idxs>
@@ -210,10 +212,10 @@ namespace cml
                 constexpr void assign_value_type(std::index_sequence<Idxs...>, ValueType vt)
                 {
 #ifndef _MSC_VER
-                    ((components[Idxs] = vt), ...);
+                    ((this->components[Idxs] = vt), ...);
 #else
                     using ar_t = int[];
-                    (void)(ar_t{((components[Idxs] = vt), 0)...});
+                    (void)(ar_t{((this->components[Idxs] = vt), 0)...});
 #endif
                 }
 
@@ -221,18 +223,18 @@ namespace cml
                 constexpr Type convert_to_type(std::index_sequence<Idxs...>) const
                 {
 #ifndef _MSC_VER
-                    return ((Type(components[Idxs]) << (Idxs * sizeof(ValueType) * 8)) | ...);
+                    return ((Type(this->components[Idxs]) << (Idxs * sizeof(ValueType) * 8)) | ...);
 #else
                     Type ret = 0;
                     using ar_t = int[];
-                    (void)(ar_t{((ret |= Type(components[Idxs]) << (Idxs * sizeof(ValueType) * 8)), 0)...});
+                    (void)(ar_t{((ret |= Type(this->components[Idxs]) << (Idxs * sizeof(ValueType) * 8)), 0)...});
                     return ret;
 #endif
                 }
                 template<typename Type, size_t... Idxs>
                 constexpr matrix<DimX, DimY, Type> convert_to_matrix(std::index_sequence<Idxs...>) const
                 {
-                    return matrix<DimX, DimY, Type>(Type(components[Idxs])...);
+                    return matrix<DimX, DimY, Type>(Type(this->components[Idxs])...);
                 }
 
             public: // should be internal
