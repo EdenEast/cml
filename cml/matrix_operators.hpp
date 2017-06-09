@@ -29,7 +29,11 @@ namespace cml
 {
     namespace implementation
     {
-        // matrix - matrix operations
+#ifdef _MSC_VER
+		using ar_t = int[];
+#endif
+		
+		// matrix - matrix operations
 
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr matrix<DimX, DimY, VType> matrix_mm_add(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
@@ -55,12 +59,24 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_mm_eq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return ((v1.components[Idxs] == v2.components[Idxs]) && ...);
+#ifndef _MSC_VER
+			return ((v1.components[Idxs] == v2.components[Idxs]) && ...);
+#else
+			bool ret = true;
+			(void)(ar_t{((ret = ret && v1.components[Idxs] == v2.components[Idxs]), 0)...});
+			return ret;
+#endif
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_mm_neq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return ((v1.components[Idxs] != v2.components[Idxs]) && ...);
+#ifndef _MSC_VER
+			return ((v1.components[Idxs] != v2.components[Idxs]) && ...);
+#else
+			bool ret = true;
+			(void)(ar_t{((ret = ret && v1.components[Idxs] != v2.components[Idxs]), 0)...});
+			return ret;
+#endif
         }
 
         template<typename VType, size_t DimX, size_t DimY>
@@ -121,12 +137,24 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_ms_eq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return ((v1.components[Idxs] == v2) && ...);
+#ifndef _MSC_VER
+			return ((v1.components[Idxs] == v2) && ...);
+#else
+			bool ret = true;
+			(void)(ar_t{((ret = ret && v1.components[Idxs] == v2), 0)...});
+			return ret;
+#endif
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_ms_neq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, VType v2)
         {
-            return ((v1.components[Idxs] != v2) && ...);
+#ifndef _MSC_VER
+			return ((v1.components[Idxs] != v2) && ...);
+#else
+			bool ret = true;
+			(void)(ar_t{((ret = ret && v1.components[Idxs] != v2), 0)...});
+			return ret;
+#endif
         }
 
         template<typename VType, size_t DimX, size_t DimY>
@@ -187,12 +215,24 @@ namespace cml
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_sm_eq(std::index_sequence<Idxs...>, VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return ((v1 == v2.components[Idxs]) && ...);
+#ifndef _MSC_VER
+			return ((v1 == v2.components[Idxs]) && ...);
+#else
+			bool ret = true;
+			(void)(ar_t{((ret = ret && v1 == v2.components[Idxs]), 0)...});
+			return ret;
+#endif
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_sm_neq(std::index_sequence<Idxs...>, VType v1, const matrix<DimX, DimY, VType>& v2)
         {
-            return ((v1 != v2.components[Idxs]) && ...);
+#ifndef _MSC_VER
+			return ((v1 != v2.components[Idxs]) && ...);
+#else
+			bool ret = true;
+			(void)(ar_t{((ret = ret && v1 != v2.components[Idxs]), 0)...});
+			return ret;
+#endif
         }
 
         template<typename VType, size_t DimX, size_t DimY>
@@ -236,7 +276,7 @@ namespace cml
             ((v1.components[Idxs] += v2.components[Idxs]), ...);
 #else
             using ar_t = int[];
-            (void)(ar_t{(v1.components[Idxs] += v2.components[Idxs])...});
+            (void)(ar_t{((v1.components[Idxs] += v2.components[Idxs]), 0)...});
 #endif
             return v1;
         }
@@ -305,7 +345,7 @@ namespace cml
             ((v1.components[Idxs] += v2.components[Idxs]), ...);
 #else
             using ar_t = int[];
-            (void)(ar_t{(v1.components[Idxs] += v2.components[Idxs])...});
+            (void)(ar_t{((v1.components[Idxs] += v2.components[Idxs]), 0)...});
 #endif
             return v1;
         }
@@ -316,7 +356,7 @@ namespace cml
             ((v1.components[Idxs] -= v2.components[Idxs]), ...);
 #else
             using ar_t = int[];
-            (void)(ar_t{(v1.components[Idxs] -= v2.components[Idxs])...});
+            (void)(ar_t{((v1.components[Idxs] -= v2.components[Idxs]), 0)...});
 #endif
             return v1;
         }
@@ -327,7 +367,7 @@ namespace cml
             ((v1.components[Idxs] *= v2.components[Idxs]), ...);
 #else
             using ar_t = int[];
-            (void)(ar_t{(v1.components[Idxs] *= v2.components[Idxs])...});
+            (void)(ar_t{((v1.components[Idxs] *= v2.components[Idxs]), 0)...});
 #endif
             return v1;
         }
@@ -338,7 +378,7 @@ namespace cml
             ((v1.components[Idxs] /= v2.components[Idxs]), ...);
 #else
             using ar_t = int[];
-            (void)(ar_t{(v1.components[Idxs] /= v2.components[Idxs])...});
+            (void)(ar_t{((v1.components[Idxs] /= v2.components[Idxs]), 0)...});
 #endif
             return v1;
         }

@@ -207,7 +207,7 @@ namespace cml
                     ((components[Idxs] = vt), ...);
 #else
                     using ar_t = int[];
-                    (void)(ar_t{(components[Idxs] = vt)...});
+                    (void)(ar_t{((components[Idxs] = vt), 0)...});
 #endif
                 }
 
@@ -219,7 +219,7 @@ namespace cml
 #else
                     Type ret = 0;
                     using ar_t = int[];
-                    (void)(ar_t{ret |= Type(components[Idxs]) << (Idxs * sizeof(ValueType) * 8)...});
+                    (void)(ar_t{((ret |= Type(components[Idxs]) << (Idxs * sizeof(ValueType) * 8)), 0)...});
                     return ret;
 #endif
                 }

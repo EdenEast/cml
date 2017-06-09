@@ -12,6 +12,8 @@ else(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
   set(PROJ_FLAGS "${PROJ_FLAGS} -DNDEBUG ")
 endif()
 
+set(PROJ_FLAGS "${PROJ_FLAGS} /std:c++latest")
+
 # some gcc/clang flags
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   set(PROJ_FLAGS "${PROJ_FLAGS} -std=c++1z -Wall -Wextra -Wno-unused-function")
@@ -35,6 +37,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(PROJ_FLAGS "${PROJ_FLAGS} -Oz")
   endif()
 endif()
+
 
 
 
