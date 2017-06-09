@@ -30,10 +30,10 @@ namespace cml
     namespace implementation
     {
 #ifdef _MSC_VER
-		using ar_t = int[];
+        using ar_t = int[];
 #endif
-		
-		// matrix - matrix operations
+        
+        // matrix - matrix operations
 
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr matrix<DimX, DimY, VType> matrix_mm_add(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
@@ -61,22 +61,22 @@ namespace cml
         static constexpr bool matrix_mm_eq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
 #ifndef _MSC_VER
-			return ((v1.components[Idxs] == v2.components[Idxs]) && ...);
+            return ((v1.components[Idxs] == v2.components[Idxs]) && ...);
 #else
-			bool ret = true;
-			(void)(ar_t{((ret = ret && v1.components[Idxs] == v2.components[Idxs]), 0)...});
-			return ret;
+            bool ret = true;
+            (void)(ar_t{((ret = ret && v1.components[Idxs] == v2.components[Idxs]), 0)...});
+            return ret;
 #endif
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_mm_neq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
 #ifndef _MSC_VER
-			return ((v1.components[Idxs] != v2.components[Idxs]) && ...);
+            return ((v1.components[Idxs] != v2.components[Idxs]) && ...);
 #else
-			bool ret = true;
-			(void)(ar_t{((ret = ret && v1.components[Idxs] != v2.components[Idxs]), 0)...});
-			return ret;
+            bool ret = true;
+            (void)(ar_t{((ret = ret && v1.components[Idxs] != v2.components[Idxs]), 0)...});
+            return ret;
 #endif
         }
 
@@ -140,22 +140,22 @@ namespace cml
         static constexpr bool matrix_ms_eq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, VType v2)
         {
 #ifndef _MSC_VER
-			return ((v1.components[Idxs] == v2) && ...);
+            return ((v1.components[Idxs] == v2) && ...);
 #else
-			bool ret = true;
-			(void)(ar_t{((ret = ret && v1.components[Idxs] == v2), 0)...});
-			return ret;
+            bool ret = true;
+            (void)(ar_t{((ret = ret && v1.components[Idxs] == v2), 0)...});
+            return ret;
 #endif
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_ms_neq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, VType v2)
         {
 #ifndef _MSC_VER
-			return ((v1.components[Idxs] != v2) && ...);
+            return ((v1.components[Idxs] != v2) && ...);
 #else
-			bool ret = true;
-			(void)(ar_t{((ret = ret && v1.components[Idxs] != v2), 0)...});
-			return ret;
+            bool ret = true;
+            (void)(ar_t{((ret = ret && v1.components[Idxs] != v2), 0)...});
+            return ret;
 #endif
         }
 
@@ -218,22 +218,22 @@ namespace cml
         static constexpr bool matrix_sm_eq(std::index_sequence<Idxs...>, VType v1, const matrix<DimX, DimY, VType>& v2)
         {
 #ifndef _MSC_VER
-			return ((v1 == v2.components[Idxs]) && ...);
+            return ((v1 == v2.components[Idxs]) && ...);
 #else
-			bool ret = true;
-			(void)(ar_t{((ret = ret && v1 == v2.components[Idxs]), 0)...});
-			return ret;
+            bool ret = true;
+            (void)(ar_t{((ret = ret && v1 == v2.components[Idxs]), 0)...});
+            return ret;
 #endif
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr bool matrix_sm_neq(std::index_sequence<Idxs...>, VType v1, const matrix<DimX, DimY, VType>& v2)
         {
 #ifndef _MSC_VER
-			return ((v1 != v2.components[Idxs]) && ...);
+            return ((v1 != v2.components[Idxs]) && ...);
 #else
-			bool ret = true;
-			(void)(ar_t{((ret = ret && v1 != v2.components[Idxs]), 0)...});
-			return ret;
+            bool ret = true;
+            (void)(ar_t{((ret = ret && v1 != v2.components[Idxs]), 0)...});
+            return ret;
 #endif
         }
 
