@@ -29,7 +29,7 @@ namespace cml
     namespace implementation
     {
         template<typename ValueType, size_t DimX, size_t DimY, size_t... Idxs>
-        ValueType dot(std::index_sequence<Idxs...>, const implementation::matrix<DimX, DimY, ValueType> &v1, const implementation::matrix<DimX, DimY, ValueType> &v2)
+        constexpr ValueType dot_impl(std::index_sequence<Idxs...>, const implementation::matrix<DimX, DimY, ValueType> &v1, const implementation::matrix<DimX, DimY, ValueType> &v2)
         {
 #ifndef _MSC_VER
             return ((v1.components[Idxs] * v2.components[Idxs]) + ...);
@@ -43,11 +43,11 @@ namespace cml
     } // namespace implementation
 
     template<typename ValueType, size_t DimX, size_t DimY>
-    ValueType dot(const implementation::matrix<DimX, DimY, ValueType>& v1, const implementation::matrix<DimX, DimY, ValueType>& v2)
+    constexpr ValueType dot(const implementation::matrix<DimX, DimY, ValueType>& v1, const implementation::matrix<DimX, DimY, ValueType>& v2)
     {
         static_assert(DimX == 1 || DimY == 1, "you can only perform dot products on vectors");
         constexpr size_t dim = (DimX == 1 ? DimY : DimX);
 
-        return implementation::dot(std::make_index_sequence<dim>{}, v1, v2);
+        return implementation::dot_impl(std::make_index_sequence<dim>{}, v1, v2);
     }
 } // namespace cml
