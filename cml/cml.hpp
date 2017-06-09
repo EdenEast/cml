@@ -29,6 +29,7 @@
 
 // functions
 #include "functions/dot.hpp"
+#include "functions/transpose.hpp"
 
 /// @brief Main cml namespace
 namespace cml
