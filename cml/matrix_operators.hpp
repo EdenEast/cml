@@ -45,11 +45,29 @@ namespace cml
         {
             return matrix<DimX, DimY, VType>{v1.components[Idxs] - v2.components[Idxs]...};
         }
-        template<typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2, size_t... Idxs>
-        static constexpr matrix<DimX1, DimY2, VType> matrix_mm_mul(std::index_sequence<Idxs...>, const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
+
+        template<size_t Idx, typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2, size_t... Idxs, size_t... CommonIdxs>
+        static constexpr VType matrix_mm_mul_dot(std::index_sequence<CommonIdxs...>, const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
         {
-            // TODO
-            return matrix<DimX1, DimY2, VType>{v1.components[Idxs] * v2.components[Idxs]...};
+            constexpr size_t x = Idx % DimX2;
+            constexpr size_t y = Idx / DimX2;
+
+#ifndef _MSC_VER
+            return ((v1.components[CommonIdxs + y * DimX1] * v2.components[x + CommonIdxs * DimX2]) + ...);
+#else
+            VType ret = VType(0);
+            (void)(ar_t {((ret += v1.components[CommonIdxs + y * DimX1] * v2.components[x + CommonIdxs * DimX2]), 0)...});
+            return ret;
+#endif
+        }
+
+        template<typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2, size_t... Idxs>
+        static constexpr matrix<DimX2, DimY1, VType> matrix_mm_mul(std::index_sequence<Idxs...>, const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
+        {
+            return matrix<DimX2, DimY1, VType>
+            {
+                matrix_mm_mul_dot<Idxs>(std::make_index_sequence<DimY2>{}, v1, v2)...
+            };
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr matrix<DimX, DimY, VType> matrix_mm_div(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
@@ -91,10 +109,10 @@ namespace cml
             return matrix_mm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
         template<typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2>
-        constexpr matrix<DimX1, DimY2, VType> operator * (const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
+        constexpr matrix<DimX2, DimY1, VType> operator * (const matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
         {
             static_assert(DimX1 == DimY2, "Cannot multiply matrices when the number of columns of the first matrix is different from the number of rows of the second matrix");
-            return matrix_mm_mul(std::make_index_sequence<DimX1 * DimY2>{}, v1, v2);
+            return matrix_mm_mul(std::make_index_sequence<DimX2 * DimY1>{}, v1, v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType> operator / (const matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)

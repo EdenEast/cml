@@ -35,6 +35,17 @@ int main()
                                                      cml::vec3(0, 0, 1)));
 
 
+    static_assert(cml::mat<3, 2>{} * cml::mat<2, 3>{} == cml::mat<2, 2>{});
+    static_assert(cml::mat<3, 2>{} * cml::mat<2, 3>{} == 0.0f);
+    static_assert(cml::mat3::identity() * cml::mat3::identity() == cml::mat3::identity());
+
+    static_assert(cml::ivec3{4, -5, -3} * cml::imat3::identity() == cml::ivec3{4, -5, -3});
+    static_assert(cml::ivec3{4, -5, -3} * (2 * cml::imat3::identity()) == 2 * cml::ivec3{4, -5, -3});
+
+//     static_assert(cml::ivec3{4, -5, -3} * cml::ivec3{4, -5, -3} == cml::ivec3{4*4, -5*-5, -3*-3});
+
+    static_assert(cml::imat<3, 2>{2, 3, -1, 6, 1, -2} * cml::imat<2, 3>{4, -5, -3, 0, 1, 2} == cml::imat<2, 2>{-2, -12, 19, -34});
+
     cml::vector<5, int> v(1, cml::ivec2(2, 3), 4, 5);
     v._<'xy'>()._<'x'>() += 5;
 
