@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "component_struct.hpp"
 #include "vector_component_table.hpp"
 
 namespace cml
@@ -41,7 +42,7 @@ namespace cml
         /// @tparam Dim The number of component this matrix have
         /// @tparam ValueType the type of matrix's components
         template<size_t DimX, size_t DimY, typename ValueType>
-        class matrix
+        class matrix : public component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>
         {
             private: // a bunch of static asserts:
                 static_assert(DimX * DimY > 1, "cml::matrix dimensions (Dim{X, Y} template parameters) must not be 0 nor 1");
@@ -70,20 +71,20 @@ namespace cml
                 }
 
                 explicit constexpr matrix(const std::array<ValueType, DimX * DimY>& value) noexcept
-                : components{value}
+                : component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>{value}
                 {
                 }
 
                 /// @brief Generic construction from either values and matrices (in any position)
                 template<typename Type2, typename... Types>
                 constexpr matrix(ValueType v1, Type2 v2, Types &&... values) noexcept
-                : components(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
+                : component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
                 {
                 }
                 /// @brief Generic construction from either values and vectors (in any position)
                 template<typename Type1, size_t D1, typename Type2, typename... Types>
                 constexpr matrix(const matrix<D1, 1, Type1>& v1, Type2 v2, Types &&... values) noexcept
-                : components(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
+                : component_struct<matrix<DimX, DimY, ValueType>, DimX, DimY, ValueType>(init_components<0>(components, v1, v2, std::forward<Types>(values)...))
                 {
                 }
 
@@ -191,7 +192,7 @@ namespace cml
 
                 template<size_t... Idxs>
                 constexpr matrix(std::index_sequence<Idxs...>, ValueType vt)
-                : components{{((void)Idxs, vt)...}}
+                : component_struct<DimX, DimY, ValueType>{{((void)Idxs, vt)...}}
                 {}
 
                 template<size_t... Idxs>
@@ -239,7 +240,7 @@ namespace cml
                 //           |   [X, Y, Z],
                 //           v   [X, Y, Z] ]
                 //         DimY  --------> DimX
-                std::array<ValueType, DimY * DimX> components = {{ValueType()}};
+                //std::array<ValueType, DimY * DimX> components = {{ValueType()}};
         };
     } // namespace implementation
 } // namespace cml
