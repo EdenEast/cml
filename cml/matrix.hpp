@@ -82,6 +82,12 @@ namespace cml
                 {
                 }
 
+                static constexpr matrix<DimX, DimY, ValueType> identity()
+                {
+                    static_assert(DimX == DimY, "Only square matrices can be identity matrices");
+                    return make_identity(std::make_index_sequence<DimX>{});
+                }
+
                 /// @brief Cast the matrix to any integral type that has the same size (or bigger)
                 template<typename Type>
                 explicit constexpr operator Type() const
@@ -143,20 +149,25 @@ namespace cml
                     return init_components<Index + 1>(ar, std::forward<Types>(values)...);
                 }
 
-                template<size_t Index, size_t VDim, typename VType, typename... Types>
-                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::array<ValueType, DimX * DimY> &ar, const matrix<VDim, 1, VType>& v, Types &&... values)
+                template<size_t Index, size_t VDimX, size_t VDimY, typename VType, typename... Types>
+                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::array<ValueType, DimX * DimY> &ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
                 {
+                    static_assert(VDimX == 1 || VDimY == 1, "You can only use vectors (row or column) to initialize other vectors/matrices");
+                    constexpr size_t VDim = (VDimX == 1 ? VDimY : VDimX);
                     static_assert(std::is_same<ValueType, typename std::common_type<VType, ValueType>::type>::value, "casting to another matrix with precision loss is forbidden");
+                    static_assert((Index / DimX) == ((Index + VDim - 1) / DimX), "when initializing a matrix, vector must not be on two rows");
                     return init_components<Index>(std::make_index_sequence<VDim>{}, ar, v, std::forward<Types>(values)...);
                 }
 
 #ifdef _MSC_VER
                 template<typename... X> static inline constexpr void x(X&&...){};
 #endif
-                template<size_t Index, size_t VDim, typename VType, size_t... Idxs, typename... Types>
-                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, DimX * DimY> &ar, const matrix<VDim, 1, VType>& v, Types &&... values)
+                template<size_t Index, size_t VDimX, size_t VDimY, typename VType, size_t... Idxs, typename... Types>
+                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, DimX * DimY> &ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
                 {
+                    constexpr size_t VDim = (VDimX == 1 ? VDimY : VDimX);
                     static_assert(Index + VDim <= DimX * DimY, "Too many parameters for constructor");
+
 #ifndef _MSC_VER
                     ((ar[Index + Idxs] = v.components[Idxs]), ...);
 #else
@@ -177,6 +188,17 @@ namespace cml
                 constexpr matrix(std::index_sequence<Idxs...>, ValueType vt)
                 : components{{((void)Idxs, vt)...}}
                 {}
+
+                template<size_t... Idxs>
+                static constexpr matrix make_identity(std::index_sequence<Idxs...>)
+                {
+                    return matrix(make_identity_row<Idxs>(std::make_index_sequence<DimY>{})...);
+                }
+                template<size_t X, size_t... Idxs>
+                static constexpr matrix<DimX, 1, ValueType> make_identity_row(std::index_sequence<Idxs...>)
+                {
+                    return matrix<DimX, 1, ValueType>((Idxs == X ? ValueType(1) : ValueType(0))...);
+                }
 
                 template<size_t... Idxs>
                 constexpr void assign_value_type(std::index_sequence<Idxs...>, ValueType vt)
@@ -215,4 +237,8 @@ namespace cml
                 std::array<ValueType, DimY * DimX> components = {{ValueType()}};
         };
     } // namespace implementation
+
+    using mat2 = implementation::matrix<2, 2, float>;
+    using mat3 = implementation::matrix<3, 3, float>;
+    using mat4 = implementation::matrix<4, 4, float>;
 } // namespace cml

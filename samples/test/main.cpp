@@ -30,6 +30,10 @@ int main()
     static_assert(1 - cml::ivec4(1) == cml::ivec4(0));
 
 
+    static_assert(cml::mat3::identity() == cml::mat3(cml::vec3(1, 0, 0),
+                                                     cml::vec3(0, 1, 0),
+                                                     cml::vec3(0, 0, 1)));
+
 
     cml::vector<5, int> v(1, cml::ivec2(2, 3), 4, 5);
     v._<'xy'>()._<'x'>() += 5;
