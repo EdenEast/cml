@@ -242,24 +242,4 @@ namespace cml
                 std::array<ValueType, DimY * DimX> components = {{ValueType()}};
         };
     } // namespace implementation
-
-
-    template<size_t X, size_t Y>
-    using mat = implementation::matrix<X, Y, float>;
-    template<size_t X, size_t Y>
-    using imat = implementation::matrix<X, Y, int32_t>;
-    template<size_t X, size_t Y>
-    using dmat = implementation::matrix<X, Y, double>;
-
-    using mat2 = mat<2, 2>;
-    using mat3 = mat<3, 3>;
-    using mat4 = mat<4, 4>;
-
-    using dmat2 = dmat<2, 2>;
-    using dmat3 = dmat<3, 3>;
-    using dmat4 = dmat<4, 4>;
-
-    using imat2 = imat<2, 2>;
-    using imat3 = imat<3, 3>;
-    using imat4 = imat<4, 4>;
 } // namespace cml

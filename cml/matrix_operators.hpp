@@ -32,7 +32,7 @@ namespace cml
 #ifdef _MSC_VER
         using ar_t = int[];
 #endif
-        
+
         // matrix - matrix operations
 
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>

@@ -25,7 +25,7 @@
 #include "matrix.hpp"
 #include "matrix_operators.hpp"
 
-#include "vector.hpp"
+#include "definitions.hpp"
 
 // functions
 #include "functions/dot.hpp"
@@ -34,6 +34,6 @@
 /// @brief Main cml namespace
 namespace cml
 {
-  
+
 } // namespace cml
 
