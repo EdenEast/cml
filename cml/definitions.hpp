@@ -35,19 +35,28 @@ namespace cml
     using vector = implementation::matrix<Dim, 1, ValueType>;
 
     using vec2  = vector<2, float>;
-    using cvec2 = vector<2, uint8_t>;
+    using cvec2 = vector<2, int8_t>;
+    using ucvec2 = vector<2, uint8_t>;
+    using svec2 = vector<2, int16_t>;
+    using usvec2 = vector<2, uint16_t>;
     using uvec2 = vector<2, uint32_t>;
     using ivec2 = vector<2, int32_t>;
     using dvec2 = vector<2, double>;
 
     using vec3  = vector<3, float>;
-    using cvec3 = vector<3, uint8_t>;
+    using cvec3 = vector<3, int8_t>;
+    using ucvec3 = vector<3, uint8_t>;
+    using svec3 = vector<3, int16_t>;
+    using usvec3 = vector<3, uint16_t>;
     using uvec3 = vector<3, uint32_t>;
     using ivec3 = vector<3, int32_t>;
     using dvec3 = vector<3, double>;
 
     using vec4  = vector<4, float>;
-    using cvec4 = vector<4, uint8_t>;
+    using cvec4 = vector<4, int8_t>;
+    using ucvec4 = vector<4, uint8_t>;
+    using svec4 = vector<4, int16_t>;
+    using usvec4 = vector<4, uint16_t>;
     using uvec4 = vector<4, uint32_t>;
     using ivec4 = vector<4, int32_t>;
     using dvec4 = vector<4, double>;
@@ -57,6 +66,8 @@ namespace cml
     using mat = implementation::matrix<X, Y, float>;
     template<size_t X, size_t Y>
     using imat = implementation::matrix<X, Y, int32_t>;
+    template<size_t X, size_t Y>
+    using smat = implementation::matrix<X, Y, int16_t>;
     template<size_t X, size_t Y>
     using dmat = implementation::matrix<X, Y, double>;
 
@@ -71,4 +82,17 @@ namespace cml
     using imat2 = imat<2, 2>;
     using imat3 = imat<3, 3>;
     using imat4 = imat<4, 4>;
+
+    using smat2 = smat<2, 2>;
+    using smat3 = smat<3, 3>;
+    using smat4 = smat<4, 4>;
+
+    // Scalar
+    template<typename ValueType>
+    using scalar = implementation::matrix<1, 1, ValueType>;
+
+    using iscalar = scalar<int32_t>;
+    using uscalar = scalar<uint32_t>;
+    using fscalar = scalar<float>;
+    using dscalar = scalar<double>;
 } // namespace cml

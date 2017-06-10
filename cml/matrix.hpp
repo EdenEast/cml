@@ -50,11 +50,6 @@ namespace cml
                 static_assert(std::is_copy_assignable<ValueType>::value, "cml::matrix ValueType must be copy assignable");
                 static_assert(std::is_copy_constructible<ValueType>::value, "cml::matrix ValueType must be copy constructible");
 
-            private: // type helpers:
-                using component_holder = matrix_components<matrix<DimX, DimY, ValueType>>;
-                friend matrix_components<matrix<DimX, DimY, ValueType>>;
-                friend matrix_components<matrix<DimY, DimX, ValueType>>;
-
             public:
                 // defaulted copy, assignation, ...
                 constexpr matrix() noexcept = default;
@@ -81,13 +76,14 @@ namespace cml
                 /// @brief Generic construction from either values and matrices (in any position)
                 template<typename Type2, typename... Types>
                 constexpr matrix(ValueType v1, Type2 v2, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::components_marker{}, v1, v2, std::forward<Types>(values)...)
+                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<ValueType>(v1), std::forward<Type2>(v2), std::forward<Types>(values)...)
                 {
                 }
+
                 /// @brief Generic construction from either values and vectors (in any position)
-                template<typename Type1, size_t D1, typename Type2, typename... Types>
-                constexpr matrix(const matrix<D1, 1, Type1>& v1, Type2 v2, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::components_marker{}, v1, v2, std::forward<Types>(values)...)
+                template<typename Type1, size_t D1, size_t D2, typename Type2, typename... Types>
+                constexpr matrix(matrix<D1, D2, Type1>&& v1, Type2 v2, Types &&... values) noexcept
+                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<matrix<D1, D2, Type1>>(v1), std::forward<Type2>(v2), std::forward<Types>(values)...)
                 {
                 }
 
@@ -178,60 +174,6 @@ namespace cml
                 }
 
             private: // helpers
-                template<typename... Types>
-                constexpr matrix(typename component_holder::components_marker, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<Types>(values)...)
-                {
-                }
-
-#ifndef __clang__
-                using init_components_type = std::array<ValueType, DimX * DimY> &;
-#else // __clang__
-                using init_components_type = std::array<ValueType, DimX * DimY>;
-#endif
-                template<size_t Index, typename... Types>
-                static constexpr init_components_type init_components(init_components_type ar, ValueType v, Types &&... values)
-                {
-                    static_assert(Index < DimX * DimY, "Too many parameters for constructor");
-                    ar[Index] = v;
-                    return init_components<Index + 1>(ar, std::forward<Types>(values)...);
-                }
-
-                template<size_t Index, size_t VDimX, size_t VDimY, typename VType, typename... Types>
-                static constexpr init_components_type init_components(init_components_type ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
-                {
-                    static_assert(VDimX == 1 || VDimY == 1, "You can only use vectors (row or column) to initialize other vectors/matrices");
-                    constexpr size_t VDim = (VDimX == 1 ? VDimY : VDimX);
-                    static_assert(std::is_same<ValueType, typename std::common_type<VType, ValueType>::type>::value, "casting to another matrix with precision loss is forbidden");
-                    static_assert((Index / DimX) == ((Index + VDim - 1) / DimX), "when initializing a matrix, vector must not be on two rows");
-                    return init_components<Index>(std::make_index_sequence<VDim>{}, ar, v, std::forward<Types>(values)...);
-                }
-
-#ifdef _MSC_VER
-                template<typename... X> static inline constexpr void x(X&&...){};
-#endif
-                template<size_t Index, size_t VDimX, size_t VDimY, typename VType, size_t... Idxs, typename... Types>
-                static constexpr init_components_type init_components(std::index_sequence<Idxs...>, init_components_type ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
-                {
-                    constexpr size_t VDim = (VDimX == 1 ? VDimY : VDimX);
-                    static_assert(Index + VDim <= DimX * DimY, "Too many parameters for constructor");
-
-#ifndef _MSC_VER
-                    ((ar[Index + Idxs] = v.components[Idxs]), ...);
-#else
-                    x(ar[Index + Idxs] = v.components[Idxs]...);
-#endif
-                    return init_components<Index + VDim>(ar, std::forward<Types>(values)...);
-                }
-
-                template<size_t Index>
-                static constexpr init_components_type init_components(init_components_type ar)
-                {
-                    // make sure that we never allow code that will trigger a buffer overflow to compile
-                    static_assert(Index <= DimX * DimY, "Too many parameters for constructor");
-                    return ar;
-                }
-
                 template<size_t... Idxs>
                 constexpr matrix(std::index_sequence<Idxs...>, ValueType vt)
                 : matrix_components<matrix<DimX, DimY, ValueType>>{((void)Idxs, vt)...}
