@@ -46,8 +46,12 @@ int main()
 
     static_assert(cml::imat<3, 2>{2, 3, -1, 6, 1, -2} * cml::imat<2, 3>{4, -5, -3, 0, 1, 2} == cml::imat<2, 2>{-2, -12, 19, -34});
 
-    cml::vector<5, int> v(1, cml::ivec2(2, 3), 4, 5);
-    v._<'xy'>()._<'x'>() += 5;
 
-    return v._<'yx'>()._<'x'>();
+    constexpr cml::imat3 m{2, 3, -1, 6, 1, -2};
+    cml::vector<7, int> v(m.rows[0].x, cml::ivec2(2, 3), m.rows[0]._<'xy'>(), 4, 5);
+    v._<'xy'>()._<'x'>() += 5;
+    v._<'xy'>()._<'x'>() += 5;
+    v.x *= 1;
+
+    return v._<'yx'>().x;
 }

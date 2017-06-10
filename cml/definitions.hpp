@@ -22,10 +22,14 @@
 
 #pragma once
 
-#include "matrix.hpp"
 
 namespace cml
 {
+    namespace implementation
+    {
+        template<size_t DimX, size_t DimY, typename ValueType> class matrix;
+    }
+
     // Vectors
     template<size_t Dim, typename ValueType>
     using vector = implementation::matrix<Dim, 1, ValueType>;

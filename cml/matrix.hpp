@@ -52,7 +52,8 @@ namespace cml
 
             private: // type helpers:
                 using component_holder = matrix_components<matrix<DimX, DimY, ValueType>>;
-                friend component_holder;
+                friend matrix_components<matrix<DimX, DimY, ValueType>>;
+                friend matrix_components<matrix<DimY, DimX, ValueType>>;
 
             public:
                 // defaulted copy, assignation, ...
@@ -73,20 +74,20 @@ namespace cml
                 }
 
                 explicit constexpr matrix(const std::array<ValueType, DimX * DimY>& value) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>{value}
+                : matrix_components<matrix<DimX, DimY, ValueType>>(value)
                 {
                 }
 
                 /// @brief Generic construction from either values and matrices (in any position)
                 template<typename Type2, typename... Types>
                 constexpr matrix(ValueType v1, Type2 v2, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::compiler_marker{}, v1, v2, std::forward<Types>(values)...)
+                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::components_marker{}, v1, v2, std::forward<Types>(values)...)
                 {
                 }
                 /// @brief Generic construction from either values and vectors (in any position)
                 template<typename Type1, size_t D1, typename Type2, typename... Types>
                 constexpr matrix(const matrix<D1, 1, Type1>& v1, Type2 v2, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::compiler_marker{}, v1, v2, std::forward<Types>(values)...)
+                : matrix_components<matrix<DimX, DimY, ValueType>>(typename component_holder::components_marker{}, v1, v2, std::forward<Types>(values)...)
                 {
                 }
 
@@ -122,7 +123,23 @@ namespace cml
 
                 /// @brief Multi component access using large char at<'xyy'>() will return a three component matrix
                 template<unsigned int Components>
-                constexpr auto _() -> typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), DimY>::type
+                constexpr auto _() -> typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), 1>::type
+                {
+                    if constexpr (Components == 0)
+                        return; // void
+                    else if constexpr (Components <= 0xFFu)
+                        return this->components[component_index_t<static_cast<char>(Components), DimX * DimY>::index];
+                    else if constexpr (Components <= 0xFFFFu)
+                        return at_separate<static_cast<char>((Components >> 8) & 0xFF), static_cast<char>((Components >> 0) & 0xFF)>();
+                    else if constexpr (Components <= 0xFFFFFFu)
+                        return at_separate<static_cast<char>((Components >> 16) & 0xFF), static_cast<char>((Components >> 8) & 0xFF), static_cast<char>((Components >> 0) & 0xFF)>();
+                    else
+                        return at_separate<static_cast<char>((Components >> 24) & 0xFF), static_cast<char>((Components >> 16) & 0xFF), static_cast<char>((Components >> 8) & 0xFF), static_cast<char>((Components >> 0) & 0xFF)>();
+                }
+
+                /// @brief Multi component access using large char at<'xyy'>() will return a three component matrix
+                template<unsigned int Components>
+                constexpr auto _() const -> const typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), 1>::type
                 {
                     if constexpr (Components == 0)
                         return; // void
@@ -138,7 +155,19 @@ namespace cml
 
                 /// @brief Component Access (at<'x'>() will be the X component, at<'x', 'y'>() will return a matrix of the two component X and Y
                 template<char... Components>
-                constexpr auto at_separate() -> typename matrix_at_return_type<ValueType, sizeof...(Components), DimY>::type
+                constexpr auto at_separate() -> typename matrix_at_return_type<ValueType, sizeof...(Components), 1>::type
+                {
+                    if constexpr (sizeof...(Components) == 0)
+                        return; // void
+                    else if constexpr (sizeof...(Components) == 1)
+                        return this->components[component_index_t<Components..., DimX * DimY>::index];
+                    else
+                        return matrix<sizeof...(Components), 1, ValueType>(this->components[component_index_t<Components, DimX * DimY>::index]...);
+                }
+
+                /// @brief Component Access (at<'x'>() will be the X component, at<'x', 'y'>() will return a matrix of the two component X and Y
+                template<char... Components>
+                constexpr auto at_separate() const -> const typename matrix_at_return_type<ValueType, sizeof...(Components), 1>::type
                 {
                     if constexpr (sizeof...(Components) == 0)
                         return; // void
@@ -149,8 +178,19 @@ namespace cml
                 }
 
             private: // helpers
+                template<typename... Types>
+                constexpr matrix(typename component_holder::components_marker, Types &&... values) noexcept
+                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<Types>(values)...)
+                {
+                }
+
+#ifndef __clang__
+                using init_components_type = std::array<ValueType, DimX * DimY> &;
+#else // __clang__
+                using init_components_type = std::array<ValueType, DimX * DimY>;
+#endif
                 template<size_t Index, typename... Types>
-                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::array<ValueType, DimX * DimY> &ar, ValueType v, Types &&... values)
+                static constexpr init_components_type init_components(init_components_type ar, ValueType v, Types &&... values)
                 {
                     static_assert(Index < DimX * DimY, "Too many parameters for constructor");
                     ar[Index] = v;
@@ -158,7 +198,7 @@ namespace cml
                 }
 
                 template<size_t Index, size_t VDimX, size_t VDimY, typename VType, typename... Types>
-                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::array<ValueType, DimX * DimY> &ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
+                static constexpr init_components_type init_components(init_components_type ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
                 {
                     static_assert(VDimX == 1 || VDimY == 1, "You can only use vectors (row or column) to initialize other vectors/matrices");
                     constexpr size_t VDim = (VDimX == 1 ? VDimY : VDimX);
@@ -171,7 +211,7 @@ namespace cml
                 template<typename... X> static inline constexpr void x(X&&...){};
 #endif
                 template<size_t Index, size_t VDimX, size_t VDimY, typename VType, size_t... Idxs, typename... Types>
-                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::index_sequence<Idxs...>, std::array<ValueType, DimX * DimY> &ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
+                static constexpr init_components_type init_components(std::index_sequence<Idxs...>, init_components_type ar, const matrix<VDimX, VDimY, VType>& v, Types &&... values)
                 {
                     constexpr size_t VDim = (VDimX == 1 ? VDimY : VDimX);
                     static_assert(Index + VDim <= DimX * DimY, "Too many parameters for constructor");
@@ -185,7 +225,7 @@ namespace cml
                 }
 
                 template<size_t Index>
-                static constexpr std::array<ValueType, DimX * DimY> &init_components(std::array<ValueType, DimX * DimY> &ar)
+                static constexpr init_components_type init_components(init_components_type ar)
                 {
                     // make sure that we never allow code that will trigger a buffer overflow to compile
                     static_assert(Index <= DimX * DimY, "Too many parameters for constructor");

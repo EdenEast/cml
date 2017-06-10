@@ -25,6 +25,8 @@
 #include <array>
 #include <cstddef>
 
+#include "definitions.hpp"
+
 namespace cml
 {
     namespace implementation
@@ -37,51 +39,70 @@ namespace cml
         //         DimY  --------> DimX
         template<typename Child> class matrix_components {};
 
-        template<size_t DimX, size_t DimY, typename ValueType> 
-        class matrix_components<matrix<DimX, DimY, ValueType>>
+#ifndef __clang__
+#define CML_MATRIX_COMPONENTS_BODY_FWD_CTR_ARG(x, y) components
+#else // __clang__
+#define CML_MATRIX_COMPONENTS_BODY_FWD_CTR_ARG(x, y) std::array<ValueType, x * y>{}
+#endif
+
+#define CML_MATRIX_COMPONENTS_BODY(x, y, m) \
+            protected: \
+                struct components_marker {}; \
+ \
+            public: \
+                constexpr matrix_components() noexcept : components{{ValueType()}} {} \
+ \
+                template<typename... Args> \
+                constexpr matrix_components(ValueType value, Args... args) noexcept : components {{value, args...}} {} \
+ \
+                constexpr matrix_components(const std::array<ValueType, x * y>& ar) noexcept : components {ar} {} \
+ \
+                template<typename... Args> \
+                constexpr matrix_components(components_marker, Args &&... args) noexcept \
+                : components {m::template init_components<0>(CML_MATRIX_COMPONENTS_BODY_FWD_CTR_ARG(x, y), std::forward<Args>(args)...)} \
+                {}
+
+        // scalar:
+        template<typename ValueType>
+        class matrix_components<matrix<1, 1, ValueType>>
         {
-            protected:
-                struct compiler_marker {};
+            private:
+                using matrix_t = matrix<1, 1, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(1, 1, matrix_t)
 
             public:
-                constexpr matrix_components() = default;
-
-                template<typename... Args>
-                constexpr matrix_components(ValueType value, Args &&... args)
-                    : components {{value, std::forward<Args>(args)...}}
+                union
                 {
-                }
-
-                template<typename... Args>
-                constexpr matrix_components(compiler_marker, Args &&... args)
-                    : components {matrix<DimX, DimY, ValueType>::template init_components<0>(components, std::forward<Args>(args)...)}
-                {
-                }
-
-                std::array<ValueType, DimY *DimX> components = {{ ValueType() }};
+                    std::array<ValueType, 1> components = {{ ValueType() }};
+                    struct { union { ValueType x; ValueType r; ValueType s; }; };
+                };
         };
+
+        // vectors:
 
         template<typename ValueType>
         class matrix_components<matrix<2, 1, ValueType>>
         {
-            protected:
-                struct compiler_marker {};
+            private:
+                using matrix_t = matrix<2, 1, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(2, 1, matrix_t)
 
             public:
-                constexpr matrix_components() = default;
-
-                template<typename... Args>
-                constexpr matrix_components(ValueType value, Args &&... args)
-                    : components(value, std::forward<Args>(args)...)
+                union
                 {
-                }
+                    std::array<ValueType, 2> components = {{ ValueType() }};
+                    struct { union { ValueType x; ValueType r; ValueType s; }; };
+                    struct { union { ValueType y; ValueType g; ValueType t; }; };
+                };
+        };
+        template<typename ValueType>
+        class matrix_components<matrix<1, 2, ValueType>>
+        {
+            private:
+                using matrix_t = matrix<1, 2, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(1, 2, matrix_t)
 
-                template<typename... Args>
-                constexpr matrix_components(compiler_marker, Args &&... args)
-                    : components(matrix<2, 1, ValueType>::template init_components<0>(components, std::forward<Args>(args)...))
-                {
-                }
-
+            public:
                 union
                 {
                     std::array<ValueType, 2> components = {{ ValueType() }};
@@ -91,55 +112,29 @@ namespace cml
         };
 
         template<typename ValueType>
-        class matrix_components<matrix<1, 1, ValueType>>
-        {
-            protected:
-                struct compiler_marker {};
-
-            public:
-                constexpr matrix_components() = default;
-
-                template<typename... Args>
-                constexpr matrix_components(ValueType value, Args &&... args)
-                    : components(value, std::forward<Args>(args)...)
-                {
-                }
-
-                template<typename... Args>
-                constexpr matrix_components(compiler_marker, Args &&... args)
-                    : components(matrix<1, 1, ValueType>::template init_components<0>(components, std::forward<Args>(args)...))
-                {
-                }
-
-                union
-                {
-                    std::array<ValueType, 1> components = {{ ValueType() }};
-                    struct { union { ValueType x; ValueType r; ValueType s; }; };
-                    struct { union { ValueType y; ValueType g; ValueType t; }; };
-                };
-        };
-
-        template<typename ValueType>
         class matrix_components<matrix<3, 1, ValueType>>
         {
-            protected:
-                struct compiler_marker {};
+            private:
+                using matrix_t = matrix<3, 1, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(3, 1, matrix_t)
 
             public:
-                constexpr matrix_components() = default;
-
-                template<typename... Args>
-                constexpr matrix_components(ValueType value, Args &&... args)
-                    : components(value, std::forward<Args>(args)...)
+                union
                 {
-                }
+                    std::array<ValueType, 3> components = {{ ValueType() }};
+                    struct { union { ValueType x; ValueType r; ValueType s; }; };
+                    struct { union { ValueType y; ValueType g; ValueType t; }; };
+                    struct { union { ValueType z; ValueType b; ValueType u; }; };
+                };
+        };
+        template<typename ValueType>
+        class matrix_components<matrix<1, 3, ValueType>>
+        {
+            private:
+                using matrix_t = matrix<1, 3, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(1, 3, matrix_t)
 
-                template<typename... Args>
-                constexpr matrix_components(compiler_marker, Args &&... args)
-                    : components(matrix<3, 1, ValueType>::template init_components<0>(components, std::forward<Args>(args)...))
-                {
-                }
-
+            public:
                 union
                 {
                     std::array<ValueType, 3> components = {{ ValueType() }};
@@ -152,24 +147,11 @@ namespace cml
         template<typename ValueType>
         class matrix_components<matrix<4, 1, ValueType>>
         {
-            protected:
-                struct compiler_marker {};
+            private:
+                using matrix_t = matrix<4, 1, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(4, 1, matrix_t)
 
             public:
-                constexpr matrix_components() = default;
-
-                template<typename... Args>
-                constexpr matrix_components(ValueType value, Args &&... args)
-                    : components {{value, std::forward<Args>(args)...}}
-                {
-                }
-
-                template<typename... Args>
-                constexpr matrix_components(compiler_marker, Args &&... args)
-                    : components(matrix<4, 1, ValueType>::template init_components<0>(components, std::forward<Args>(args)...))
-                {
-                }
-
                 union
                 {
                     std::array<ValueType, 4> components = {{ ValueType() }};
@@ -179,5 +161,79 @@ namespace cml
                     struct { union { ValueType w; ValueType a; ValueType v; }; };
                 };
         };
+
+        template<typename ValueType>
+        class matrix_components<matrix<1, 4, ValueType>>
+        {
+            private:
+                using matrix_t = matrix<1, 4, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(1, 4, matrix_t)
+
+            public:
+                union
+                {
+                    std::array<ValueType, 4> components = {{ ValueType() }};
+                    struct { union { ValueType x; ValueType r; ValueType s; }; };
+                    struct { union { ValueType y; ValueType g; ValueType t; }; };
+                    struct { union { ValueType z; ValueType b; ValueType u; }; };
+                    struct { union { ValueType w; ValueType a; ValueType v; }; };
+                };
+        };
+
+        template<size_t DimX, typename ValueType>
+        class matrix_components<matrix<DimX, 1, ValueType>>
+        {
+            private:
+                using matrix_t = matrix<DimX, 1, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(DimX, 1, matrix_t)
+
+            public:
+                union
+                {
+                    std::array<ValueType, DimX> components = {{ ValueType() }};
+                    struct { union { ValueType x; ValueType r; ValueType s; }; };
+                    struct { union { ValueType y; ValueType g; ValueType t; }; };
+                    struct { union { ValueType z; ValueType b; ValueType u; }; };
+                    struct { union { ValueType w; ValueType a; ValueType v; }; };
+                };
+        };
+
+        template<size_t DimY, typename ValueType>
+        class matrix_components<matrix<1, DimY, ValueType>>
+        {
+            private:
+                using matrix_t = matrix<1, DimY, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(1, DimY, matrix_t)
+
+            public:
+                union
+                {
+                    std::array<ValueType, DimY> components = {{ ValueType() }};
+                    struct { union { ValueType x; ValueType r; ValueType s; }; };
+                    struct { union { ValueType y; ValueType g; ValueType t; }; };
+                    struct { union { ValueType z; ValueType b; ValueType u; }; };
+                    struct { union { ValueType w; ValueType a; ValueType v; }; };
+                };
+        };
+
+        // matrices (somewhat generic)
+        template<size_t DimX, size_t DimY, typename ValueType>
+        class matrix_components<matrix<DimY, DimX, ValueType>>
+        {
+            private:
+                static_assert(DimY > 1);
+                static_assert(DimX > 1); // only matches matrices
+                using matrix_t = matrix<DimX, DimY, ValueType>;
+                CML_MATRIX_COMPONENTS_BODY(DimX, DimY, matrix_t)
+
+            public:
+                union
+                {
+                    std::array<ValueType, DimX * DimY> components = {{ ValueType() }};
+                    std::array<matrix<DimX, 1, ValueType>, DimY> rows;
+                };
+        };
+
+#undef CML_MATRIX_COMPONENTS_BODY
     }
 }
