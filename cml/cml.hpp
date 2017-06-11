@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include "fixed_point.hpp"
+
 #include "matrix.hpp"
 #include "matrix_operators.hpp"
 

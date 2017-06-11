@@ -132,7 +132,7 @@ namespace cml
         static constexpr fixed convert(const fixed<Other, Frac>& o)
         {
             if constexpr(Frac > FractionnalBits)
-                return {from_fixed, o.data >> (Frac - FractionnalBits)};
+                return {from_fixed, static_cast<Type>(o.data >> (Frac - FractionnalBits))};
             else if constexpr (Frac < FractionnalBits)
                 return {from_fixed, static_cast<Type>(o.data) << (FractionnalBits - Frac)};
             else

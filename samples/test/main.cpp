@@ -19,8 +19,6 @@ int main()
     static_assert(static_cast<uint32_t>(cml::cvec4(4, 3, 2, 1)) == 0x01020304); // only OK on little endians
 
 
-
-
     // eq / neq operators
     static_assert(cml::ivec4(4, 3, 2, 1) == cml::ivec4(4, 3, 2, 1));
     static_assert(!(cml::ivec4(4, 3, 2, 1) != cml::ivec4(4, 3, 2, 1)));
@@ -68,12 +66,47 @@ int main()
     static_assert(cml::imat<3, 2>{2, 3, -1, 6, 1, -2} * cml::imat<2, 3>{4, -5, -3, 0, 1, 2} == cml::imat<2, 2>{-2, -12, 19, -34});
 
 
-    constexpr cml::imat3 m{0, 3, -1, 6, 1, -2};
-    cml::vector<7, int> v(m.rows[0].x, cml::ivec2(2, 3), m.rows[0]._<'xy'>(), 4, 5);
+
+    // fixed
+    static_assert(cml::f88(2.5).data == 0x0280);
+    static_assert(cml::f88(0.5).data == 0x0080);
+    static_assert(cml::f88(2).data == 0x0200);
+    static_assert(cml::f88(2.5).to<double>() == 2.5);
+    static_assert(cml::f88(2.5).to<float>() == 2.5f);
+    static_assert(cml::f88(2.5).to<int>() == 2);
+    static_assert(cml::f88(-2.5).to<int>() == -2);
+    static_assert(cml::f88(-2.5).to<double>() == -2.5);
+    static_assert(cml::f88(-2).to<int>() == -2);
+    static_assert(cml::f88(2.5).to<cml::f1616>() == cml::f1616(2.5));
+    static_assert(static_cast<cml::f1616>(cml::f88(2.5)) == cml::f1616(2.5));
+    static_assert(cml::f1616::from(cml::f88(2.5)) == cml::f1616(2.5));
+
+    static_assert((cml::f88(-2) + cml::f88(2)) == cml::f88(0));
+    static_assert((cml::f88(-2.5) + cml::f88(2.5)) == cml::f88(0));
+    static_assert((cml::f88(-1.5) + cml::f88(2.5)) == cml::f88(1.0));
+    static_assert((cml::f88(-1) - cml::f88(0.5) - cml::f88(2) - cml::f88(0.5)) == cml::f88(-4));
+
+    static_assert((cml::f88(-1) * cml::f88(0.5)) == cml::f88(-0.5));
+    static_assert((cml::f88(1) / cml::f88(2)) == cml::f88(0.5));
+    static_assert((++cml::f88(1)) == cml::f88(2));
+    static_assert((cml::f88(1)++) == cml::f88(2));
+    static_assert((--cml::f88(1)) == cml::f88(0));
+    static_assert((cml::f88(1)--) == cml::f88(0));
+    static_assert((cml::f88(cml::f88(1))--) == cml::f88(0));
+
+    static_assert((cml::f88vec2{2, 3}).components[0] == cml::f88(2));
+    static_assert(cml::f88mat<3, 2>{2, 3, -1, 6, 1, -2} * cml::f88mat<2, 3>{4, -5, -3, 0, 1, 2} == cml::f88mat<2, 2>{-2, -12, 19, -34});
+
+    static_assert((cml::f1616vec3(1, cml::f88vec2{2, 3})) == cml::f1616vec3{1, 2, 3});
+    static_assert((cml::f88vec2{2, 3}).unsafe_cast<cml::f1616>() == cml::f1616vec2{2, 3});
+
+
+    constexpr cml::f0824mat3 m{0, 3, -1, 6, 1, -2};
+    cml::vector<7, cml::f1616> v(m.rows[0].x, cml::ivec2(2, 3), m.rows[0]._<'xy'>(), 4, 5);
     v._<'xy'>()._<'x'>() += 5;
     v._<'xy'>()._<'x'>() += 5;
     v.x *= 20;
     v.y *= 20;
 
-    return v._<'yx'>().x;
+    return v._<'yx'>().x.to<int>();
 }

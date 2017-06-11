@@ -76,6 +76,15 @@ namespace cml
                 return get_nth_component<Index - (DimX * DimY)>(std::forward<Args>(args)...);
         }
 
+        template<size_t Index, size_t FB, typename ValueType, typename... Args>
+        static constexpr auto get_nth_component_obj([[maybe_unused]]const fixed<ValueType, FB>& m, Args &&... args) -> auto
+        {
+            if constexpr(Index == 0)
+                return m;
+            else
+                return get_nth_component<Index - 1>(std::forward<Args>(args)...);
+        }
+
         template<size_t Index, typename ValueType, typename... Args>
         static constexpr auto get_nth_component([[maybe_unused]]ValueType&& m, Args&&... args) -> auto
         {
