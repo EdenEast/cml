@@ -312,17 +312,6 @@ namespace cml
             return v1;
         }
         template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
-        static constexpr matrix<DimX, DimY, VType>& matrix_smm_mul(std::index_sequence<Idxs...>, matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
-        {
-#ifndef _MSC_VER
-            ((v1.components[Idxs] *= v2.components[Idxs]), ...);
-#else
-            using ar_t = int[];
-            (void)(ar_t{(v1.components[Idxs] *= v2.components[Idxs])...});
-#endif
-            return v1;
-        }
-        template<typename VType, size_t DimX, size_t DimY, size_t... Idxs>
         static constexpr matrix<DimX, DimY, VType>& matrix_smm_div(std::index_sequence<Idxs...>, matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
         {
 #ifndef _MSC_VER
@@ -345,10 +334,18 @@ namespace cml
         {
             return matrix_smm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         }
-        template<typename VType, size_t DimX, size_t DimY>
-        constexpr matrix<DimX, DimY, VType>& operator *= (matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
+        template<typename VType, size_t DimX1, size_t DimY1, size_t DimX2, size_t DimY2>
+        constexpr matrix<DimX1, DimY1, VType>& operator *= (matrix<DimX1, DimY1, VType>& v1, const matrix<DimX2, DimY2, VType>& v2)
         {
-            return matrix_smm_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
+            // This static assert is necessary as with matrix multiplication of two matrices/vectors produces a potentially different type.
+            // To multiply two matrices and make sure the result has the same type than the first matrix, the second one MUST be a square matrix with the same size
+            // as the vertical size of the first one:
+            // say you have a <4, 5> matrix, the only way to use *= is to multiply that <4, 5> matrix by a <5, 5> one
+            // In a more general way, a <X, Y> matrix/vector can only be multiplied against a <Y, Y> matrix:
+            //      <X, Y> *= <Y, Y>
+            // Any other matrices will produce a different type and affectation will not work.
+            static_assert(DimY1 == DimX2 && DimY2 == DimY1, "matrix *= operator can only be used when the other matrix is a square matrix of the same dimension of the DimY of the initial matrix");
+            return (v1 = v1 * v2);
         }
         template<typename VType, size_t DimX, size_t DimY>
         constexpr matrix<DimX, DimY, VType>& operator /= (matrix<DimX, DimY, VType>& v1, const matrix<DimX, DimY, VType>& v2)
