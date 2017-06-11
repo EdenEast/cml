@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include "reference.hpp"
 
 namespace cml
 {
@@ -124,7 +125,7 @@ namespace cml
             if constexpr (std::is_arithmetic<ConvType>::value)
                 return {from_fixed, static_cast<Type>(static_cast<ConvType>(x) * static_cast<ConvType>(1ul << FractionnalBits))};
             else
-                return convert(x);
+                return fixed::convert(x);
         }
 
         /// @brief Convert any other fixed point type into a given fixed point
@@ -145,6 +146,8 @@ namespace cml
         {
             if constexpr(std::is_arithmetic<ConvType>::value)
                 return static_cast<ConvType>(data) / static_cast<ConvType>(1ul << FractionnalBits);
+            else if constexpr(implementation::is_reference<ConvType>::value)
+                return ConvType::value_type::convert(*this);
             else
                 return ConvType::convert(*this);
         }
@@ -161,10 +164,10 @@ namespace cml
         constexpr fixed& operator -- () noexcept { data -= static_cast<Type>(1) << FractionnalBits; return *this; }
         constexpr fixed& operator -- (int) noexcept { data -= static_cast<Type>(1) << FractionnalBits; return *this; }
 
-        constexpr fixed& operator += (const fixed o) noexcept { data += o.data; return *this; }
-        constexpr fixed& operator -= (const fixed o) noexcept { data -= o.data; return *this; }
-        constexpr fixed& operator *= (const fixed o) noexcept { data = static_cast<Type>((static_cast<upper_type>(data) * static_cast<upper_type>(o.data)) >> FractionnalBits); return *this; }
-        constexpr fixed& operator /= (const fixed o) noexcept { data = static_cast<Type>((static_cast<upper_type>(data) << FractionnalBits) / o.data); return *this; }
+        constexpr fixed& operator += (const fixed& o) noexcept { data += o.data; return *this; }
+        constexpr fixed& operator -= (const fixed& o) noexcept { data -= o.data; return *this; }
+        constexpr fixed& operator *= (const fixed& o) noexcept { data = static_cast<Type>((static_cast<upper_type>(data) * static_cast<upper_type>(o.data)) >> FractionnalBits); return *this; }
+        constexpr fixed& operator /= (const fixed& o) noexcept { data = static_cast<Type>((static_cast<upper_type>(data) << FractionnalBits) / o.data); return *this; }
 
         constexpr fixed& operator <<= (size_t o) noexcept { data <<= o; return *this; }
         constexpr fixed& operator >>= (size_t o) noexcept { data >>= o; }
@@ -183,19 +186,23 @@ namespace cml
             }
         }
 
-        constexpr fixed operator + (const fixed o) const noexcept { return {from_fixed, static_cast<Type>(data + o.data)}; }
-        constexpr fixed operator - (const fixed o) const noexcept { return {from_fixed, static_cast<Type>(data - o.data)}; }
-        constexpr fixed operator * (const fixed o) const noexcept { return {from_fixed, static_cast<Type>((static_cast<upper_type>(data) * static_cast<upper_type>(o.data)) >> FractionnalBits)}; }
-        constexpr fixed operator / (const fixed o) const noexcept { return {from_fixed, static_cast<Type>((static_cast<upper_type>(data) << FractionnalBits) / o.data)}; }
+        constexpr fixed operator + (const fixed& o) const noexcept { return {from_fixed, static_cast<Type>(data + o.data)}; }
+        constexpr fixed operator - (const fixed& o) const noexcept { return {from_fixed, static_cast<Type>(data - o.data)}; }
+        constexpr fixed operator * (const fixed& o) const noexcept { return {from_fixed, static_cast<Type>((static_cast<upper_type>(data) * static_cast<upper_type>(o.data)) >> FractionnalBits)}; }
+        constexpr fixed operator / (const fixed& o) const noexcept { return {from_fixed, static_cast<Type>((static_cast<upper_type>(data) << FractionnalBits) / o.data)}; }
 
         constexpr fixed operator << (size_t o) const noexcept { return {from_fixed, data << o}; }
         constexpr fixed operator >> (size_t o) const noexcept { return {from_fixed, data >> o}; }
 
-        constexpr bool operator == (const fixed o) const noexcept { return data == o.data; }
-        constexpr bool operator != (const fixed o) const noexcept { return data != o.data; }
-        constexpr bool operator >= (const fixed o) const noexcept { return data >= o.data; }
-        constexpr bool operator <= (const fixed o) const noexcept { return data <= o.data; }
-        constexpr bool operator > (const fixed o) const noexcept { return data > o.data; }
-        constexpr bool operator < (const fixed o) const noexcept { return data < o.data; }
+        constexpr bool operator == (const fixed& o) const noexcept { return data == o.data; }
+        constexpr bool operator != (const fixed& o) const noexcept { return data != o.data; }
+        constexpr bool operator >= (const fixed& o) const noexcept { return data >= o.data; }
+        constexpr bool operator <= (const fixed& o) const noexcept { return data <= o.data; }
+        constexpr bool operator > (const fixed& o) const noexcept { return data > o.data; }
+        constexpr bool operator < (const fixed& o) const noexcept { return data < o.data; }
     };
+
+    // traits
+    template<typename T> struct is_fixed_point : public std::false_type {};
+    template<typename T, size_t X> struct is_fixed_point<fixed<T, X>> : public std::true_type {};
 } // namespace cml

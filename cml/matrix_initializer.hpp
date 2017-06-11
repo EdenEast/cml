@@ -31,6 +31,7 @@ namespace cml
     namespace implementation
     {
         template<size_t DimX, size_t DimY, typename ValueType> class matrix;
+        template<typename ValueType> struct reference;
 
         /// @brief Return the component count of a given type
         template<typename ValueType>
@@ -86,9 +87,18 @@ namespace cml
         }
 
         template<size_t Index, typename ValueType, typename... Args>
+        static constexpr auto get_nth_component_obj([[maybe_unused]]const reference<ValueType>& m, Args &&... args) -> auto
+        {
+            if constexpr(Index == 0)
+                return m;
+            else
+                return get_nth_component<Index - 1>(std::forward<Args>(args)...);
+        }
+
+        template<size_t Index, typename ValueType, typename... Args>
         static constexpr auto get_nth_component([[maybe_unused]]ValueType&& m, Args&&... args) -> auto
         {
-            if constexpr (std::is_arithmetic<typename std::remove_reference<typename std::remove_cv<ValueType>::type>::type>::value)
+            if constexpr (std::is_arithmetic<typename std::remove_reference<typename std::remove_cv<ValueType>::type>::type>::value || std::is_pointer<ValueType>::value)
             {
                 if constexpr(Index == 0)
                     return m;

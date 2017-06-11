@@ -28,15 +28,20 @@
 
 #include "matrix_components.hpp"
 #include "vector_component_table.hpp"
+#include "reference.hpp"
 
 namespace cml
 {
     namespace implementation
     {
         template<size_t DimX, size_t DimY, typename ValueType> class matrix;
-        template<typename ValueType, size_t DimX, size_t DimY> struct matrix_at_return_type { using type = matrix<DimX, DimY, ValueType>; };
-        template<typename ValueType> struct matrix_at_return_type<ValueType, 1, 1> { using type = ValueType &; };
-        template<typename ValueType> struct matrix_at_return_type<ValueType, 0, 1> { using type = void; };
+        template<typename ValueType, size_t DimX, size_t DimY, bool IsConst> struct matrix_at_return_type { using type = matrix<DimX, DimY, ValueType>; };
+        template<typename ValueType, size_t DimX, size_t DimY> struct matrix_at_return_type<ValueType, DimX, DimY, true> { using type = matrix<DimX, DimY, ValueType>; };
+        template<typename ValueType, size_t DimX, size_t DimY> struct matrix_at_return_type<ValueType, DimX, DimY, false> { using type = matrix<DimX, DimY, reference<ValueType>>; };
+        template<typename ValueType, size_t DimX, size_t DimY> struct matrix_at_return_type<reference<ValueType>, DimX, DimY, false> { using type = matrix<DimX, DimY, reference<ValueType>>; };
+        template<typename ValueType> struct matrix_at_return_type<ValueType, 1, 1, true> { using type = const ValueType &; };
+        template<typename ValueType> struct matrix_at_return_type<ValueType, 1, 1, false> { using type = ValueType &; };
+        template<typename ValueType, bool IC> struct matrix_at_return_type<ValueType, 0, 1, IC> { using type = void; };
 
         /// @brief Generic matrix class. Can hold multiple values of *any* type
         /// @tparam Dim The number of component this matrix have
@@ -63,6 +68,13 @@ namespace cml
                     return *this;
                 }
 
+                template<typename Type>
+                constexpr matrix &operator = (const matrix<DimX, DimY, Type>& o) noexcept
+                {
+                    affect_matrix(std::make_index_sequence<DimX * DimY>{}, o);
+                    return *this;
+                }
+
                 explicit constexpr matrix(ValueType value) noexcept
                 : matrix(std::make_index_sequence<DimX * DimY>{}, value)
                 {
@@ -74,16 +86,9 @@ namespace cml
                 }
 
                 /// @brief Generic construction from either values and matrices (in any position)
-                template<typename Type2, typename... Types>
-                constexpr matrix(ValueType v1, Type2 v2, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<ValueType>(v1), std::forward<Type2>(v2), std::forward<Types>(values)...)
-                {
-                }
-
-                /// @brief Generic construction from either values and vectors (in any position)
-                template<typename Type1, size_t D1, size_t D2, typename Type2, typename... Types>
-                constexpr matrix(matrix<D1, D2, Type1>&& v1, Type2 v2, Types &&... values) noexcept
-                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<matrix<D1, D2, Type1>>(v1), std::forward<Type2>(v2), std::forward<Types>(values)...)
+                template<typename Type1, typename Type2, typename... Types>
+                constexpr matrix(Type1 v1, Type2 v2, Types &&... values) noexcept
+                : matrix_components<matrix<DimX, DimY, ValueType>>(std::forward<Type1>(v1), std::forward<Type2>(v2), std::forward<Types>(values)...)
                 {
                 }
 
@@ -106,8 +111,15 @@ namespace cml
                 template<typename Type>
                 constexpr operator matrix<DimX, DimY, Type>() const
                 {
-                    static_assert(std::is_same<Type, typename std::common_type<Type, ValueType>::type>::value, "casting to another matrix with precision loss is forbidden"); // mostly for SFINAE
-                    return convert_to_matrix<Type>(std::make_index_sequence<DimX * DimY>{});
+                    if constexpr(std::is_arithmetic<Type>::value)
+                    {
+                        static_assert(std::is_same<Type, typename std::common_type<Type, ValueType>::type>::value, "casting to another matrix with precision loss is forbidden");
+                        return convert_to_matrix<Type>(std::make_index_sequence<DimX *DimY> {});
+                    }
+                    else
+                    {
+                        static_assert(sizeof(Type) >= 0, "implicit cast to another matrix with a non arithmetic type is forbidden");
+                    }
                 }
 
                 /// @brief Unsafly cast to a matrix /... that has a type that will loose some information
@@ -119,7 +131,7 @@ namespace cml
 
                 /// @brief Multi component access using large char at<'xyy'>() will return a three component matrix
                 template<unsigned int Components>
-                constexpr auto _() -> typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), 1>::type
+                constexpr auto _() -> typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), 1, false>::type
                 {
                     if constexpr (Components == 0)
                         return; // void
@@ -135,7 +147,7 @@ namespace cml
 
                 /// @brief Multi component access using large char at<'xyy'>() will return a three component matrix
                 template<unsigned int Components>
-                constexpr auto _() const -> const typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), 1>::type
+                constexpr auto _() const -> typename matrix_at_return_type<ValueType, (Components > 0x000000FFu ? 2 : (Components > 0 ? 1 : 0)), 1, true>::type
                 {
                     if constexpr (Components == 0)
                         return; // void
@@ -151,19 +163,19 @@ namespace cml
 
                 /// @brief Component Access (at<'x'>() will be the X component, at<'x', 'y'>() will return a matrix of the two component X and Y
                 template<char... Components>
-                constexpr auto at_separate() -> typename matrix_at_return_type<ValueType, sizeof...(Components), 1>::type
+                constexpr auto at_separate() -> typename matrix_at_return_type<ValueType, sizeof...(Components), 1, false>::type
                 {
                     if constexpr (sizeof...(Components) == 0)
                         return; // void
                     else if constexpr (sizeof...(Components) == 1)
                         return this->components[component_index_t<Components..., DimX * DimY>::index];
                     else
-                        return matrix<sizeof...(Components), 1, ValueType>(this->components[component_index_t<Components, DimX * DimY>::index]...);
+                        return matrix<sizeof...(Components), 1, reference<ValueType>>(reference<ValueType>(&this->components[component_index_t<Components, DimX * DimY>::index])...);
                 }
 
                 /// @brief Component Access (at<'x'>() will be the X component, at<'x', 'y'>() will return a matrix of the two component X and Y
                 template<char... Components>
-                constexpr auto at_separate() const -> const typename matrix_at_return_type<ValueType, sizeof...(Components), 1>::type
+                constexpr auto at_separate() const -> typename matrix_at_return_type<ValueType, sizeof...(Components), 1, true>::type
                 {
                     if constexpr (sizeof...(Components) == 0)
                         return; // void
@@ -201,6 +213,17 @@ namespace cml
 #endif
                 }
 
+                template<size_t... Idxs, typename OtherMatrix>
+                constexpr void affect_matrix(std::index_sequence<Idxs...>, const OtherMatrix& vt)
+                {
+#ifndef _MSC_VER
+                    ((this->components[Idxs] = vt.components[Idxs]), ...);
+#else
+                    using ar_t = int[];
+                    (void)(ar_t{((this->components[Idxs] = vt), 0)...});
+#endif
+                }
+
                 template<typename Type, size_t... Idxs>
                 constexpr Type convert_to_type(std::index_sequence<Idxs...>) const
                 {
@@ -216,7 +239,7 @@ namespace cml
                 template<typename Type, size_t... Idxs>
                 constexpr matrix<DimX, DimY, Type> convert_to_matrix(std::index_sequence<Idxs...>) const
                 {
-                    return matrix<DimX, DimY, Type>(Type(this->components[Idxs])...);
+                    return matrix<DimX, DimY, Type>(static_cast<Type>(this->components[Idxs])...);
                 }
 
             public: // should be internal

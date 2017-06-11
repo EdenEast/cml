@@ -101,12 +101,23 @@ int main()
     static_assert((cml::f88vec2{2, 3}).unsafe_cast<cml::f1616>() == cml::f1616vec2{2, 3});
 
 
-    constexpr cml::f0824mat3 m{0, 3, -1, 6, 1, -2};
-    cml::vector<7, cml::f1616> v(m.rows[0].x, cml::ivec2(2, 3), m.rows[0]._<'xy'>(), 4, 5);
-    v._<'xy'>()._<'x'>() += 5;
-    v._<'xy'>()._<'x'>() += 5;
-    v.x *= 20;
-    v.y *= 20;
+    // runtime test
 
-    return v._<'yx'>().x.to<int>();
+    // fixed points
+    constexpr cml::f88mat3 m{0, 3, -1, 6, 1, -2};
+    cml::vector<7, cml::f1616> v(m.rows[0].x, cml::ivec2(2, 3), m.rows[0]._<'xy'>(), 4, 5);
+    v._<'xy'>() += cml::f0824(5);
+    v._<'zw'>() = v._<'xy'>() + cml::f88(5);
+    v._<'yy'>() *= cml::f1616(5);
+
+    constexpr cml::mat3 im{0, 3, -1, 6, 1, -2};
+    cml::vector<7, int32_t> iv(m.rows[0].x, cml::ivec2(2, 3), m.rows[0]._<'xy'>(), 4, 5);
+    iv._<'xy'>() += 5;
+    iv._<'zw'>() = iv._<'xy'>() + 5;
+    iv._<'yy'>() *= 5;
+
+    printf("iv.x %i, v.x %i (must be 175 both)\n", int(iv._<'yx'>().x), cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x);
+
+    // should return 175
+    return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;
 }
