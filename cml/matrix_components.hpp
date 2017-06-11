@@ -43,6 +43,8 @@ namespace cml
 #define CML_MATRIX_COMPONENTS_BODY(x, y, m) \
             protected: \
                 constexpr matrix_components() noexcept : components{{ValueType()}} {} \
+                constexpr matrix_components(const matrix_components&o) noexcept : components{{o.components}} {} \
+                constexpr matrix_components& operator = (const matrix_components&o) noexcept { components = o.components; return *this; } \
  \
                 constexpr matrix_components(const std::array<ValueType, x * y>& ar) noexcept : components {ar} {} \
  \
@@ -88,8 +90,11 @@ namespace cml
                 union
                 {
                     std::array<ValueType, 2> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                    };
                 };
         };
         template<typename ValueType>
@@ -103,8 +108,11 @@ namespace cml
                 union
                 {
                     std::array<ValueType, 2> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                    };
                 };
         };
 
@@ -119,9 +127,12 @@ namespace cml
                 union
                 {
                     std::array<ValueType, 3> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
-                    union { ValueType z; ValueType b; ValueType u; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                        union { ValueType z; ValueType b; ValueType u; };
+                    };
                 };
         };
         template<typename ValueType>
@@ -135,9 +146,12 @@ namespace cml
                 union
                 {
                     std::array<ValueType, 3> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
-                    union { ValueType z; ValueType b; ValueType u; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                        union { ValueType z; ValueType b; ValueType u; };
+                    };
                 };
         };
 
@@ -152,10 +166,13 @@ namespace cml
                 union
                 {
                     std::array<ValueType, 4> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
-                    union { ValueType z; ValueType b; ValueType u; };
-                    union { ValueType w; ValueType a; ValueType v; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                        union { ValueType z; ValueType b; ValueType u; };
+                        union { ValueType w; ValueType a; ValueType v; };
+                    };
                 };
         };
 
@@ -170,10 +187,13 @@ namespace cml
                 union
                 {
                     std::array<ValueType, 4> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
-                    union { ValueType z; ValueType b; ValueType u; };
-                    union { ValueType w; ValueType a; ValueType v; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                        union { ValueType z; ValueType b; ValueType u; };
+                        union { ValueType w; ValueType a; ValueType v; };
+                    };
                 };
         };
 
@@ -188,10 +208,13 @@ namespace cml
                 union
                 {
                     std::array<ValueType, DimX> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
-                    union { ValueType z; ValueType b; ValueType u; };
-                    union { ValueType w; ValueType a; ValueType v; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                        union { ValueType z; ValueType b; ValueType u; };
+                        union { ValueType w; ValueType a; ValueType v; };
+                    };
                 };
         };
 
@@ -206,10 +229,13 @@ namespace cml
                 union
                 {
                     std::array<ValueType, DimY> components = {{ ValueType() }};
-                    union { ValueType x; ValueType r; ValueType s; };
-                    union { ValueType y; ValueType g; ValueType t; };
-                    union { ValueType z; ValueType b; ValueType u; };
-                    union { ValueType w; ValueType a; ValueType v; };
+                    struct
+                    {
+                        union { ValueType x; ValueType r; ValueType s; };
+                        union { ValueType y; ValueType g; ValueType t; };
+                        union { ValueType z; ValueType b; ValueType u; };
+                        union { ValueType w; ValueType a; ValueType v; };
+                    };
                 };
         };
 
