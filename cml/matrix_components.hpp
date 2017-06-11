@@ -43,7 +43,7 @@ namespace cml
 #define CML_MATRIX_COMPONENTS_BODY(x, y, m) \
             protected: \
                 constexpr matrix_components() noexcept : components{{ValueType()}} {} \
-                constexpr matrix_components(const matrix_components&o) noexcept : components{{o.components}} {} \
+                constexpr matrix_components(const matrix_components&o) noexcept : components{o.components} {} \
                 constexpr matrix_components& operator = (const matrix_components&o) noexcept { components = o.components; return *this; } \
  \
                 constexpr matrix_components(const std::array<ValueType, x * y>& ar) noexcept : components {ar} {} \
