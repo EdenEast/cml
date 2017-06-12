@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 James Simpson, TimothÃ©e Feuillet
+// Copyright (c) 2017 James Simpson, Timothée Feuillet
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,22 +21,31 @@
 //
 
 #pragma once
+#include <math.h>
 
-#include "fixed_point.hpp"
-
-#include "matrix.hpp"
-#include "matrix_operators.hpp"
-
-#include "definitions.hpp"
-
-// functions
-#include "functions/dot.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/transpose.hpp"
-
-/// @brief Main cml namespace
 namespace cml
 {
+    namespace implementation
+    {
+        // https://stackoverflow.com/a/27709195
+        template<typename ValueType>
+        constexpr ValueType sqrt_impl(ValueType x, ValueType lo, ValueType hi)
+        {
+            if (lo == hi)
+                return lo;
 
-} // namespace cml
+            const ValueType mid = (lo + hi + 1) / 2;
 
+            if (x / mid < mid)
+                return sqrt_impl<ValueType>(x, lo, mid - 1);
+            else
+                return sqrt_impl(x, mid, hi);
+        }
+    }
+
+    template<typename ValueType>
+    constexpr ValueType sqrt(const ValueType& v)
+    {
+        return implementation::sqrt_impl(v, static_cast<ValueType>(0), v / static_cast<ValueType>(2) + static_cast<ValueType>(1));
+    }
+}
