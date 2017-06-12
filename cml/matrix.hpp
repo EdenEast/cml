@@ -220,7 +220,7 @@ namespace cml
                     ((this->components[Idxs] = vt.components[Idxs]), ...);
 #else
                     using ar_t = int[];
-                    (void)(ar_t{((this->components[Idxs] = vt), 0)...});
+                    (void)(ar_t{((this->components[Idxs] = vt.components[Idxs]), 0)...});
 #endif
                 }
 
