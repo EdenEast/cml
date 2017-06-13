@@ -1,5 +1,6 @@
 
 #include <cml/cml.hpp>
+#include <math.h>
 
 int main()
 {
@@ -117,6 +118,10 @@ int main()
     iv._<'yy'>() *= 5;
 
     printf("iv.x %i, v.x %i (must be 175 both)\n", int(iv._<'yx'>().x), cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x);
+
+    printf("sqrt(5.f) = %i\n", cml::sqrt(32.f));
+    printf("sqrt(5.f) = %i\n", std::sqrt(32.f));
+    system("pause");
 
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;

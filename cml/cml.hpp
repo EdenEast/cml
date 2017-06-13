@@ -30,6 +30,7 @@
 #include "definitions.hpp"
 
 // functions
+#include "functions/abs.hpp"
 #include "functions/dot.hpp"
 #include "functions/sqrt.hpp"
 #include "functions/transpose.hpp"

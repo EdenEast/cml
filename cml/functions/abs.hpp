@@ -21,33 +21,14 @@
 //
 
 #pragma once
-#include <limits>
+#include <type_traits>
 
 namespace cml
 {
-    namespace implementation
-    {
-        // https://stackoverflow.com/a/27709195
-        template<typename ValueType>
-        constexpr ValueType sqrt_impl(ValueType x, ValueType lo, ValueType hi)
-        {
-            constexpr auto epsilon = std::numeric_limits<ValueType>::epsilon();
-            const auto diff = cml::abs(hi - lo);
-            if (diff <= epsilon)
-                return lo;
-
-            const ValueType mid = (lo + hi + static_cast<ValueType>(1)) / static_cast<ValueType>(2);
-
-            if (x / mid < mid)
-                return sqrt_impl(x, lo, mid - static_cast<ValueType>(1));
-            else
-                return sqrt_impl(x, mid, hi);
-        }
-    }
-
     template<typename ValueType>
-    constexpr ValueType sqrt(const ValueType& v)
+    constexpr ValueType abs(ValueType&& v)
     {
-        return implementation::sqrt_impl(v, static_cast<ValueType>(0), v / static_cast<ValueType>(2) + static_cast<ValueType>(1));
+        static_assert(std::is_same<ValueType, float>::value || std::is_same<ValueType, double>::value || std::is_integral<ValueType>::value, "Cannot abs type");
+        return v < static_cast<ValueType>(0) ? -v : v;
     }
 }
