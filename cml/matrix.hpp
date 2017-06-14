@@ -241,13 +241,6 @@ namespace cml
                 {
                     return matrix<DimX, DimY, Type>(static_cast<Type>(this->components[Idxs])...);
                 }
-
-            public: // should be internal
-                // stored as | [ [X, Y, Z],
-                //           |   [X, Y, Z],
-                //           v   [X, Y, Z] ]
-                //         DimY  --------> DimX
-                //std::array<ValueType, DimY * DimX> components = {{ValueType()}};
         };
     } // namespace implementation
 } // namespace cml
