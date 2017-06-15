@@ -2,6 +2,9 @@
 #include <cml/cml.hpp>
 #include <math.h>
 
+#define STRING(STR) #STR
+#define CHECK(expr) if (!(expr)) {printf("Check failed: %s\n", STRING(expr));}
+
 int main()
 {
     static_assert(cml::ivec4(cml::ivec3(1, 6, 1), 6) == cml::ivec4(1, 6, 1, 6));
@@ -119,9 +122,8 @@ int main()
 
     printf("iv.x %i, v.x %i (must be 175 both)\n", int(iv._<'yx'>().x), cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x);
 
-    printf("sqrt(5.f) = %i\n", cml::sqrt(32.f));
-    printf("sqrt(5.f) = %i\n", std::sqrt(32.f));
-    system("pause");
+    CHECK(cml::sqrt(5.0) == std::sqrt(5.0));
+    CHECK(cml::sqrt(5.0f) == std::sqrt(5.0f));
 
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;

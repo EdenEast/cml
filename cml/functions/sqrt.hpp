@@ -21,33 +21,39 @@
 //
 
 #pragma once
-#include <limits>
+#include <cstddef>
 
 namespace cml
 {
     namespace implementation
     {
-        // https://stackoverflow.com/a/27709195
+        template<typename VT> struct get_iterator_number { static constexpr size_t count = sizeof(VT) * 8; };
+        template<> struct get_iterator_number<float> { static constexpr size_t count = 24; };
+        template<> struct get_iterator_number<double> { static constexpr size_t count = 53; };
+
         template<typename ValueType>
-        constexpr ValueType sqrt_impl(ValueType x, ValueType lo, ValueType hi)
+        constexpr ValueType sqrt_impl(ValueType number)
         {
-            constexpr auto epsilon = std::numeric_limits<ValueType>::epsilon();
-            const auto diff = cml::abs(hi - lo);
-            if (diff <= epsilon)
-                return lo;
-
-            const ValueType mid = (lo + hi + static_cast<ValueType>(1)) / static_cast<ValueType>(2);
-
-            if (x / mid < mid)
-                return sqrt_impl(x, lo, mid - static_cast<ValueType>(1));
-            else
-                return sqrt_impl(x, mid, hi);
+            ValueType res = number;
+            ValueType it = number;
+            for (size_t i = 0; i < get_iterator_number<ValueType>::count; ++i)
+            {
+                it /= ValueType(2);
+                const ValueType pow = res * res;
+                if (pow == number)
+                    break;
+                else if (pow > number)
+                    res -= it;
+                else
+                    res += it;
+            }
+            return res;
         }
     }
 
     template<typename ValueType>
-    constexpr ValueType sqrt(const ValueType& v)
+    constexpr ValueType sqrt(ValueType&& v)
     {
-        return implementation::sqrt_impl(v, static_cast<ValueType>(0), v / static_cast<ValueType>(2) + static_cast<ValueType>(1));
+        return implementation::sqrt_impl(v);
     }
 }

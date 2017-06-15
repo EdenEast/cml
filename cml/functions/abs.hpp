@@ -28,7 +28,6 @@ namespace cml
     template<typename ValueType>
     constexpr ValueType abs(ValueType&& v)
     {
-        static_assert(std::is_same<ValueType, float>::value || std::is_same<ValueType, double>::value || std::is_integral<ValueType>::value, "Cannot abs type");
         return v < static_cast<ValueType>(0) ? -v : v;
     }
 }
