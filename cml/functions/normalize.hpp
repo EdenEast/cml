@@ -22,25 +22,24 @@
 
 #pragma once
 
-#include "fixed_point.hpp"
+#include "../matrix.hpp"
+#include "../traits.hpp"
+#include "length.hpp"
 
-#include "matrix.hpp"
-#include "matrix_operators.hpp"
-
-#include "definitions.hpp"
-#include "traits.hpp"
-
-// functions
-#include "functions/abs.hpp"
-#include "functions/dot.hpp"
-#include "functions/length.hpp"
-#include "functions/normalize.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/transpose.hpp"
-
-/// @brief Main cml namespace
 namespace cml
 {
+    template<size_t DimX, size_t DimY, typename ValueType>
+    constexpr implementation::matrix<DimX, DimY, ValueType> normalize(const implementation::matrix<DimX, DimY, ValueType>& v)
+    {
+        static_assert(is_vector(v), "Can only normalize a vector.");
+        return v * (ValueType(1) / length(v));
+    }
+}
 
-} // namespace cml
+#ifdef CML_COMPILE_TEST_CASE
 
+#include "../definitions.hpp"
+
+static_assert(cml::equals_approx<2>(cml::length(cml::normalize(cml::vec3(1, 2, 3))), 1.0f));
+
+#endif
