@@ -60,10 +60,9 @@ namespace cml
 
 #ifdef CML_COMPILE_TEST_CASE
 
-#include "abs.hpp"
-#include <limits>
+#include "../traits.hpp"
 
-static_assert(cml::abs(5.0 - cml::sqrt(5.0) * cml::sqrt(5.0)) < std::numeric_limits<double>::epsilon() * 16);
+static_assert(cml::equals_approx<16>(5.0, cml::sqrt(5.0) * cml::sqrt(5.0)));
 static_assert(5.0f == cml::sqrt(5.0f) * cml::sqrt(5.0f));
 
 #endif

@@ -28,6 +28,6 @@ namespace cml
     template<typename ValueType>
     constexpr ValueType abs(ValueType&& v)
     {
-        return v < static_cast<ValueType>(0) ? -v : v;
+        return v < ValueType(0) ? -v : v;
     }
 }

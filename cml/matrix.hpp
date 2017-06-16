@@ -56,6 +56,9 @@ namespace cml
                 static_assert(std::is_copy_constructible<ValueType>::value, "cml::matrix ValueType must be copy constructible");
 
             public:
+                using value_type = ValueType;
+                
+            public:
                 // defaulted copy, assignation, ...
                 constexpr matrix() noexcept = default;
                 constexpr matrix(const matrix&) noexcept = default;
