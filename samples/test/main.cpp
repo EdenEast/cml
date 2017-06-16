@@ -1,9 +1,11 @@
 
+#define CML_COMPILE_TEST_CASE 1
 #include <cml/cml.hpp>
 #include <math.h>
 
 #define STRING(STR) #STR
 #define CHECK(expr) if (!(expr)) {printf("Check failed: %s\n", STRING(expr));}
+
 
 int main()
 {
