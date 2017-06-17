@@ -23,21 +23,13 @@
 #pragma once
 
 #include "../matrix.hpp"
-#include "../traits.hpp"
-#include "length.hpp"
+#include "dot.hpp"
 
 namespace cml
 {
     template<size_t DimX, size_t DimY, typename ValueType>
-    constexpr ValueType distance(const implementation::matrix<DimX, DimY, ValueType>& v1, const implementation::matrix<DimX, DimY, ValueType>& v2)
+    constexpr implementation::matrix<DimX, DimY, ValueType> reflect(const implementation::matrix<DimX, DimY, ValueType>& incident, const implementation::matrix<DimX, DimY, ValueType>& normal)
     {
-        static_assert(is_vector<DimX, DimY>::value, "Can only find the distance of two vectors.");
-        return length(v1 - v2);
+        return incident - ValueType(2) * dot(incident, normal) * normal;
     }
 }
-
-#ifdef CML_COMPILE_TEST_CASE
-
-#include "../definitions.hpp"
-
-#endif

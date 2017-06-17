@@ -38,6 +38,7 @@
 #include "functions/max.hpp"
 #include "functions/min.hpp"
 #include "functions/normalize.hpp"
+#include "functions/reflect.hpp"
 #include "functions/sqrt.hpp"
 #include "functions/transpose.hpp"
 
