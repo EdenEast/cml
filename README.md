@@ -1,5 +1,5 @@
 # cml
-Common Math Library, Focusing on graphics and physics math.
+Common Math Library, focusing on graphics and physics math.
 
 General points
 * cross compiler support
