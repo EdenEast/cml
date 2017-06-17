@@ -36,9 +36,10 @@ namespace cml
 #ifndef _MSC_VER
             return sqrt(((v.components[Idxs] * v.components[Idxs]) + ...));
 #else
-            Valuetype ret = Valuetype(0);
+            ValueType ret = ValueType(0);
             using ar_t = int[];
             (void)(ar_t {((ret += v.components[Idxs] * v.components[Idxs]), 0)...});
+            return ret;
 #endif
         }
     }
@@ -46,8 +47,9 @@ namespace cml
     template<size_t DimX, size_t DimY, typename ValueType>
     constexpr ValueType length(const implementation::matrix<DimX, DimY, ValueType>& v)
     {
-        static_assert(is_vector(v), "Cannot find the length of a matrix. Make sure that the value passed is a vector");
-        return length_impl(std::make_index_sequence<get_vector_size(v)>{}, v);
+        static_assert(is_vector<DimX, DimY>::value, "Cannot find the length of a matrix. Make sure that the value passed is a vector");
+        constexpr size_t dim = (DimX == 1 ? DimY : DimX);
+        return length_impl(std::make_index_sequence<dim>{}, v);
     }
 }
 

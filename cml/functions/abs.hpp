@@ -26,7 +26,7 @@
 namespace cml
 {
     template<typename ValueType>
-    constexpr ValueType abs(ValueType&& v)
+    constexpr ValueType abs(ValueType v)
     {
         return v < ValueType(0) ? -v : v;
     }

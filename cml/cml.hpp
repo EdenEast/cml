@@ -35,6 +35,8 @@
 #include "functions/distance.hpp"
 #include "functions/dot.hpp"
 #include "functions/length.hpp"
+#include "functions/max.hpp"
+#include "functions/min.hpp"
 #include "functions/normalize.hpp"
 #include "functions/sqrt.hpp"
 #include "functions/transpose.hpp"

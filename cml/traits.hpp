@@ -24,26 +24,17 @@
 
 #include "matrix.hpp"
 #include "functions/abs.hpp"
+#include "functions/max.hpp"
 #include <limits>
 
 namespace cml
 {
-    template<size_t DimX, size_t DimY, typename ValueType>
-    constexpr bool is_vector(const implementation::matrix<DimX, DimY, ValueType>&)
-    {
-        return DimX == 1 || DimY == 1;
-    }
+    template<size_t DimX, size_t DimY>
+    struct is_vector { static constexpr bool value = (DimX == 1 || DimY == 1); };
     
-    template<size_t DimX, size_t DimY, typename ValueType>
-    constexpr size_t get_vector_size(const implementation::matrix<DimX, DimY, ValueType>& v)
-    {
-        static_assert(is_vector(v), "Cannot get the size of the vector as the value is a matrix");
-        return DimX == 1 ? DimY : DimX;
-    }
-    
-    template<size_t byte_percision, typename ValueType>
+    template<size_t ulp, typename ValueType>
     constexpr bool equals_approx(ValueType one, ValueType two)
     {
-        return (abs(one - two) <= std::numeric_limits<ValueType>::epsilon() * (byte_percision));
+        return abs(one - two) < std::numeric_limits<ValueType>::epsilon() * max(abs(one), abs(two)) * ulp;
     }
 }
