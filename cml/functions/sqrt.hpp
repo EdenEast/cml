@@ -52,7 +52,7 @@ namespace cml
     }
 
     template<typename ValueType>
-    constexpr ValueType sqrt(ValueType&& v)
+    constexpr ValueType sqrt(ValueType v)
     {
         return implementation::sqrt_impl(v);
     }

@@ -38,8 +38,8 @@ namespace cml
 #else
             ValueType ret = ValueType(0);
             using ar_t = int[];
-            (void)(ar_t {((ret += v.components[Idxs] * v.components[Idxs]), 0)...});
-            return ret;
+            (void)(ar_t{((ret += v.components[Idxs] * v.components[Idxs]), 0)...});
+            return sqrt(ret);
 #endif
         }
     }
