@@ -29,9 +29,18 @@
 
 namespace cml
 {
-    template<size_t DimX, size_t DimY>
-    struct is_vector { static constexpr bool value = (DimX == 1 || DimY == 1); };
-    
+    template<typename ValueType>
+    struct is_vector : public std::false_type {};
+
+    template<typename ValueType>
+    struct is_vector<implementation::matrix<1, 1, ValueType>> : public std::false_type {};
+
+    template<size_t DimX, typename ValueType>
+    struct is_vector<implementation::matrix<DimX, 1, ValueType>> : public std::true_type {};
+
+    template<size_t DimY, typename ValueType>
+    struct is_vector<implementation::matrix<1, DimY, ValueType>> : public std::true_type {};
+
     template<size_t ulp, typename ValueType>
     constexpr bool equals_approx(ValueType one, ValueType two)
     {

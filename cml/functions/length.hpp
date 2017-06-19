@@ -47,7 +47,7 @@ namespace cml
     template<size_t DimX, size_t DimY, typename ValueType>
     constexpr ValueType length(const implementation::matrix<DimX, DimY, ValueType>& v)
     {
-        static_assert(is_vector<DimX, DimY>::value, "Cannot find the length of a matrix. Make sure that the value passed is a vector");
+        static_assert(is_vector<implementation::matrix<DimX, DimY, ValueType>>::value, "Cannot find the length of a matrix. Make sure that the value passed is a vector");
         constexpr size_t dim = (DimX == 1 ? DimY : DimX);
         return length_impl(std::make_index_sequence<dim>{}, v);
     }
