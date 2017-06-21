@@ -124,7 +124,7 @@ int main()
 
     printf("iv.x %i, v.x %i (must be 175 both)\n", int(iv._<'yx'>().x), cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x);
 
-    CHECK(cml::sqrt(5.0) == std::sqrt(5.0));
+    CHECK(cml::equals_approx<1>(cml::sqrt(5.0), std::sqrt(5.0)));
     CHECK(cml::sqrt(5.0f) == std::sqrt(5.0f));
 
     // should return 175

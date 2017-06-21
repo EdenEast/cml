@@ -62,7 +62,7 @@ namespace cml
 
 #include "../traits.hpp"
 
-static_assert(cml::equals_approx<16>(5.0, cml::sqrt(5.0) * cml::sqrt(5.0)));
+static_assert(cml::equals_approx<4>(5.0, cml::sqrt(5.0) * cml::sqrt(5.0)));
 static_assert(5.0f == cml::sqrt(5.0f) * cml::sqrt(5.0f));
 
 #endif
