@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017 James Simpson, TimothÃ©e Feuillet
+// Copyright (c) 2017 James Simpson, Timothée Feuillet
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,19 @@
 
 #pragma once
 
-#include "fixed_point.hpp"
+#include "../definitions.hpp"
 
-#include "matrix.hpp"
-#include "matrix_operators.hpp"
-
-#include "definitions.hpp"
-#include "traits.hpp"
-
-// functions
-#include "functions/abs.hpp"
-#include "functions/clamp.hpp"
-#include "functions/distance.hpp"
-#include "functions/dot.hpp"
-#include "functions/length.hpp"
-#include "functions/lerp.hpp"
-#include "functions/max.hpp"
-#include "functions/min.hpp"
-#include "functions/normalize.hpp"
-#include "functions/reflect.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/transpose.hpp"
-
-/// @brief Main cml namespace
 namespace cml
 {
-
-} // namespace cml
-
+    // Performs a linear interpolation.
+    // P(dt) = (1 - dt)a + (dt)b
+    //       = a + dt(b - a)
+    //
+    // where
+    // dt in range [0,1]
+    template<typename ValueType>
+    constexpr ValueType lerp(const ValueType& a, const ValueType& b, uf0032 dt)
+    {
+        return a + (b - a) * dt;
+    }
+}
