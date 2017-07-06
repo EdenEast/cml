@@ -28,6 +28,8 @@ namespace cml
     namespace implementation
     {
         template<size_t DimX, size_t DimY, typename ValueType> class matrix;
+        template<typename ValueType> class degree;
+        template<typename ValueType> class radian;
     }
 
     // Fixed points
@@ -175,4 +177,8 @@ namespace cml
     using uf1616scalar = scalar<uf1616>;
     using uf0824scalar = scalar<uf0824>;
     using uf0032scalar = scalar<uf0032>;
+    
+    // Angle
+    using degree = implementation::degree<float>;
+    using radian = implementation::radian<float>;
 } // namespace cml
