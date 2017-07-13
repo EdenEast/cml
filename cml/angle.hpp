@@ -43,11 +43,6 @@ namespace cml
             using value_type = ValueType;
             using this_type = degree<ValueType>;
 
-            // @Note (James): not sure if we should just let Valuetype be constructed
-            // or just static_cast vt to ValueType
-            template<typename VT>
-            constexpr degree(VT angle) = delete;
-
             constexpr degree() noexcept = default;
             constexpr degree(const this_type& other) noexcept
             : angle(other.angle)
@@ -200,11 +195,6 @@ namespace cml
         public:
             using value_type = ValueType;
             using this_type = radian<ValueType>;
-
-            // @Note (James): not sure if we should just let Valuetype be constructed
-            // or just static_cast vt to ValueType
-            template<typename VT>
-            constexpr radian(VT angle) = delete;
 
             constexpr radian() noexcept = default;
             constexpr radian(const this_type& other) noexcept
