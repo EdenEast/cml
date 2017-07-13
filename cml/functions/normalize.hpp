@@ -40,6 +40,6 @@ namespace cml
 
 #include "../definitions.hpp"
 
-static_assert(cml::equals_approx<2>(cml::length(cml::normalize(cml::vec3(1, 2, 3))), 1.0f));
+static_assert(cml::is_equal<2>(cml::length(cml::normalize(cml::vec3(1, 2, 3))), 1.0f));
 
 #endif

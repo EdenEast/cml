@@ -41,9 +41,10 @@ namespace cml
     template<size_t DimY, typename ValueType>
     struct is_vector<implementation::matrix<1, DimY, ValueType>> : public std::true_type {};
 
-    template<size_t ulp, typename ValueType>
-    constexpr bool equals_approx(ValueType one, ValueType two)
+    template<int ulp = 1, typename ValueType>
+    constexpr bool is_equal(const ValueType v1, const ValueType v2)
     {
-        return abs(one - two) < std::numeric_limits<ValueType>::epsilon() * max(abs(one), abs(two)) * ulp;
+        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
+            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
     }
 }
