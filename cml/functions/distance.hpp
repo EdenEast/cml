@@ -31,7 +31,7 @@ namespace cml
     template<size_t DimX, size_t DimY, typename ValueType>
     constexpr ValueType distance(const implementation::matrix<DimX, DimY, ValueType>& v1, const implementation::matrix<DimX, DimY, ValueType>& v2)
     {
-        static_assert(is_vector<DimX, DimY>::value, "Can only find the distance of two vectors.");
+        static_assert(is_vector<implementation::matrix<DimX, DimY, ValueType>>::value, "Can only find the distance of two vectors.");
         return length(v1 - v2);
     }
 }
