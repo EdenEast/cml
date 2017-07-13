@@ -38,6 +38,7 @@ namespace cml
         class degree
         {
             static constexpr ValueType Rad2Deg = static_cast<ValueType>(57.295779513082321);
+            static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "ValueType must be a floating|fixed point.");
         public:
             using value_type = ValueType;
             using this_type = degree<ValueType>;
@@ -195,6 +196,7 @@ namespace cml
         class radian
         {
             static constexpr ValueType Deg2Rad = static_cast<ValueType>(0.0174532925199432958);
+            static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "ValueType must be a floating|fixed point.");
         public:
             using value_type = ValueType;
             using this_type = radian<ValueType>;
