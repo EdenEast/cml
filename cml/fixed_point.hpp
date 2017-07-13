@@ -81,7 +81,7 @@ namespace cml
     {
         static_assert(std::is_integral<Type>::value, "fixed point base type needs to be an integral type");
         static_assert(!(FractionnalBits % 2), "the fractional part MUST be a multiple of 2");
-        static_assert(FractionnalBits < sizeof(Type) * 8, "the fractional part MUST be lower than the number of bit the underlying type has");
+        static_assert(FractionnalBits <= sizeof(Type) * 8, "the fractional part MUST be lower than the number of bit the underlying type has");
 
         static constexpr struct from_fixed_t {} from_fixed = from_fixed_t{};
         static constexpr bool is_signed = std::is_signed<Type>::value;
@@ -90,7 +90,7 @@ namespace cml
 
         static constexpr size_t fractional_bits = FractionnalBits;
         static constexpr size_t integer_bits = sizeof(Type) * 8 - FractionnalBits;
-        static_assert(is_signed && FractionnalBits < (sizeof(Type) * 8 - 1), "fixed point number have a signed format yet cannot have a sign (the fractional part span across all the availlable bits)");
+        static_assert((is_signed && FractionnalBits <= (sizeof(Type) * 8 - 1)) || !is_signed, "fixed point number have a signed format yet cannot have a sign (the fractional part span across all the availlable bits)");
 
 
         constexpr fixed() noexcept = default;

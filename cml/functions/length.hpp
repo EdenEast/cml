@@ -56,7 +56,7 @@ namespace cml
 
 #ifdef CML_COMPILE_TEST_CASE
 
-static_assert(cml::equals_approx<4>(cml::length(cml::implementation::matrix<2, 1, float>(6.f, 8.f)), 10.f));
-static_assert(cml::equals_approx<4>(cml::length(cml::implementation::matrix<2, 1, double>(6.0, 8.0)), 10.0));
+static_assert(cml::is_equal<2>(cml::length(cml::implementation::matrix<2, 1, float>(6.f, 8.f)), 10.f));
+static_assert(cml::is_equal(cml::length(cml::implementation::matrix<2, 1, double>(6.0, 8.0)), 10.0));
 
 #endif

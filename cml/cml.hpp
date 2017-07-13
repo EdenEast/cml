@@ -27,6 +27,7 @@
 #include "matrix.hpp"
 #include "matrix_operators.hpp"
 
+#include "angle.hpp"
 #include "definitions.hpp"
 #include "traits.hpp"
 
