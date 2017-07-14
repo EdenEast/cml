@@ -23,8 +23,8 @@
 #pragma once
 
 #include "matrix.hpp"
+#include "definitions.hpp"
 #include "functions/abs.hpp"
-#include "functions/max.hpp"
 #include <limits>
 
 namespace cml
@@ -40,6 +40,23 @@ namespace cml
 
     template<size_t DimY, typename ValueType>
     struct is_vector<implementation::matrix<1, DimY, ValueType>> : public std::true_type {};
+
+    template<typename X>
+    struct is_matrix : public std::false_type {};
+
+    template<size_t DimY, size_t DimX, typename ValueType>
+    struct is_matrix<implementation::matrix<DimX, DimY, ValueType>> : public std::true_type {};
+
+    template<typename X> struct matrix_traits {};
+    template<size_t DimY, size_t DimX, typename ValueType>
+    struct matrix_traits<implementation::matrix<DimX, DimY, ValueType>>
+    {
+        static constexpr uvec2 dim = uvec2{DimX, DimY};
+        static constexpr size_t dimx = DimX;
+        static constexpr size_t dimy = DimY;
+        static constexpr size_t components = DimX * DimY;
+        using type = ValueType;
+    };
 
     template<int ulp = 1, typename ValueType>
     constexpr bool is_equal(const ValueType v1, const ValueType v2)
