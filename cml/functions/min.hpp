@@ -25,8 +25,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "dot.hpp"
-
 #include "../traits.hpp"
 
 namespace cml
@@ -39,14 +37,14 @@ namespace cml
     {
         /// \brief Matrix / Scalar
         template<typename MatrixType, typename ScalarType, typename... Args, size_t... Idxs>
-        constexpr auto ms_min(std::index_sequence<Idxs...>, const MatrixType &v1, const ScalarType &v2, Args &&... args) -> auto
+        constexpr auto ms_min(std::index_sequence<Idxs...>, const MatrixType& v1, const ScalarType& v2, Args&&... args) -> auto
         {
             return min(MatrixType{min(v1.components[Idxs], v2)...}, std::forward<Args>(args)...);
         }
 
         /// \brief Matrix / Matrix min
         template<typename MatrixType, typename... Args, size_t... Idxs>
-        constexpr auto mm_min(std::index_sequence<Idxs...>, const MatrixType &v1, const MatrixType &v2, Args &&... args) -> auto
+        constexpr auto mm_min(std::index_sequence<Idxs...>, const MatrixType& v1, const MatrixType& v2, Args&&... args) -> auto
         {
             return min(MatrixType{min(v1.components[Idxs], v2.components[Idxs])...}, std::forward<Args>(args)...);
         }
