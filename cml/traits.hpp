@@ -22,39 +22,45 @@
 
 #pragma once
 
-#include "matrix.hpp"
+#include "matrix_kind.hpp"
 #include "definitions.hpp"
 #include "functions/abs.hpp"
 #include <limits>
 
 namespace cml
 {
+    namespace implementation
+    {
+        template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
+    }
+
     template<typename ValueType>
     struct is_vector : public std::false_type {};
 
-    template<typename ValueType>
-    struct is_vector<implementation::matrix<1, 1, ValueType>> : public std::false_type {};
+    template<typename ValueType, implementation::matrix_kind Kind>
+    struct is_vector<implementation::matrix<1, 1, ValueType, Kind>> : public std::false_type {};
 
-    template<size_t DimX, typename ValueType>
-    struct is_vector<implementation::matrix<DimX, 1, ValueType>> : public std::true_type {};
+    template<size_t DimX, typename ValueType, implementation::matrix_kind Kind>
+    struct is_vector<implementation::matrix<DimX, 1, ValueType, Kind>> : public std::true_type {};
 
-    template<size_t DimY, typename ValueType>
-    struct is_vector<implementation::matrix<1, DimY, ValueType>> : public std::true_type {};
+    template<size_t DimY, typename ValueType, implementation::matrix_kind Kind>
+    struct is_vector<implementation::matrix<1, DimY, ValueType, Kind>> : public std::true_type {};
 
     template<typename X>
     struct is_matrix : public std::false_type {};
 
-    template<size_t DimY, size_t DimX, typename ValueType>
-    struct is_matrix<implementation::matrix<DimX, DimY, ValueType>> : public std::true_type {};
+    template<size_t DimY, size_t DimX, typename ValueType, implementation::matrix_kind Kind>
+    struct is_matrix<implementation::matrix<DimX, DimY, ValueType, Kind>> : public std::true_type {};
 
     template<typename X> struct matrix_traits {};
-    template<size_t DimY, size_t DimX, typename ValueType>
-    struct matrix_traits<implementation::matrix<DimX, DimY, ValueType>>
+    template<size_t DimY, size_t DimX, typename ValueType, implementation::matrix_kind Kind>
+    struct matrix_traits<implementation::matrix<DimX, DimY, ValueType, Kind>>
     {
         static constexpr uvec2 dim = uvec2{DimX, DimY};
         static constexpr size_t dimx = DimX;
         static constexpr size_t dimy = DimY;
         static constexpr size_t components = DimX * DimY;
+        static constexpr implementation::matrix_kind kind = Kind;
         using type = ValueType;
     };
 

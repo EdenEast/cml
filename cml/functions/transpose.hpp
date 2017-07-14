@@ -28,18 +28,18 @@ namespace cml
 {
     namespace implementation
     {
-        template<typename ValueType, size_t DimX, size_t DimY, size_t... Idxs>
-        constexpr matrix<DimY, DimX, ValueType> transpose_impl(std::index_sequence<Idxs...>, const implementation::matrix<DimX, DimY, ValueType> &m)
+        template<typename ValueType, size_t DimX, size_t DimY, implementation::matrix_kind Kind, size_t... Idxs>
+        constexpr matrix<DimY, DimX, ValueType, Kind> transpose_impl(std::index_sequence<Idxs...>, const implementation::matrix<DimX, DimY, ValueType, Kind> &m)
         {
-            return matrix<DimY, DimX, ValueType>
+            return matrix<DimY, DimX, ValueType, Kind>
             {
                 m.components[(Idxs / DimX) + (Idxs % DimX) * DimY]...
             };
         }
     } // namespace implementation
 
-    template<typename ValueType, size_t DimX, size_t DimY>
-    constexpr implementation::matrix<DimY, DimX, ValueType> transpose(const implementation::matrix<DimX, DimY, ValueType>& m)
+    template<typename ValueType, size_t DimX, size_t DimY, implementation::matrix_kind Kind>
+    constexpr implementation::matrix<DimY, DimX, ValueType, Kind> transpose(const implementation::matrix<DimX, DimY, ValueType, Kind>& m)
     {
         return implementation::transpose_impl(std::make_index_sequence<DimX * DimY>{}, m);
     }

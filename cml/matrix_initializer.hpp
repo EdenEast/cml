@@ -25,12 +25,13 @@
 #include <cstddef>
 
 #include "definitions.hpp"
+#include "matrix_kind.hpp"
 
 namespace cml
 {
     namespace implementation
     {
-        template<size_t DimX, size_t DimY, typename ValueType> class matrix;
+        template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
         template<typename ValueType> struct reference;
 
         /// @brief Return the component count of a given type
@@ -39,8 +40,8 @@ namespace cml
         {
             static constexpr size_t count = 1;
         };
-        template<size_t DimX, size_t DimY, typename ValueType>
-        struct get_component_count<matrix<DimX, DimY, ValueType>>
+        template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind>
+        struct get_component_count<matrix<DimX, DimY, ValueType, Kind>>
         {
             static constexpr size_t count = DimX * DimY;
         };
@@ -68,8 +69,8 @@ namespace cml
         template<size_t Index, typename ValueType, typename... Args>
         static constexpr auto get_nth_component([[maybe_unused]]ValueType&& m, Args&&... args) -> auto;
 
-        template<size_t Index, size_t DimX, size_t DimY, typename ValueType, typename... Args>
-        static constexpr auto get_nth_component_obj([[maybe_unused]]const matrix<DimX, DimY, ValueType>& m, Args &&... args) -> auto
+        template<size_t Index, size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind, typename... Args>
+        static constexpr auto get_nth_component_obj([[maybe_unused]]const matrix<DimX, DimY, ValueType, Kind>& m, Args &&... args) -> auto
         {
             if constexpr(Index < DimX * DimY)
                 return m.components[Index];

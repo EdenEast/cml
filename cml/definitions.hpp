@@ -22,12 +22,13 @@
 
 #pragma once
 
+#include "matrix_kind.hpp"
 
 namespace cml
 {
     namespace implementation
     {
-        template<size_t DimX, size_t DimY, typename ValueType> class matrix;
+        template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
         template<typename ValueType> class degree;
         template<typename ValueType> class radian;
     }
@@ -55,7 +56,7 @@ namespace cml
 
     // Vectors
     template<size_t Dim, typename ValueType>
-    using vector = implementation::matrix<Dim, 1, ValueType>;
+    using vector = implementation::matrix<Dim, 1, ValueType, implementation::matrix_kind::normal>;
 
     using vec2  = vector<2, float>;
     using cvec2 = vector<2, int8_t>;
@@ -110,22 +111,22 @@ namespace cml
 
     // Matrix
     template<size_t X, size_t Y>
-    using mat = implementation::matrix<X, Y, float>;
+    using mat = implementation::matrix<X, Y, float, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
-    using imat = implementation::matrix<X, Y, int32_t>;
+    using imat = implementation::matrix<X, Y, int32_t, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
-    using smat = implementation::matrix<X, Y, int16_t>;
+    using smat = implementation::matrix<X, Y, int16_t, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
-    using dmat = implementation::matrix<X, Y, double>;
+    using dmat = implementation::matrix<X, Y, double, implementation::matrix_kind::normal>;
 
     template<size_t X, size_t Y>
-    using f88mat = implementation::matrix<X, Y, f88>;
+    using f88mat = implementation::matrix<X, Y, f88, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
-    using f1616mat = implementation::matrix<X, Y, f1616>;
+    using f1616mat = implementation::matrix<X, Y, f1616, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
-    using f0824mat = implementation::matrix<X, Y, f0824>;
+    using f0824mat = implementation::matrix<X, Y, f0824, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
-    using f0131mat = implementation::matrix<X, Y, f0131>;
+    using f0131mat = implementation::matrix<X, Y, f0131, implementation::matrix_kind::normal>;
 
     using mat2 = mat<2, 2>;
     using mat3 = mat<3, 3>;
@@ -161,7 +162,7 @@ namespace cml
 
     // Scalar
     template<typename ValueType>
-    using scalar = implementation::matrix<1, 1, ValueType>;
+    using scalar = implementation::matrix<1, 1, ValueType, implementation::matrix_kind::normal>;
 
     using iscalar = scalar<int32_t>;
     using uscalar = scalar<uint32_t>;

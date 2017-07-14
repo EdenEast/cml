@@ -27,8 +27,8 @@
 
 namespace cml
 {
-    template<size_t DimX, size_t DimY, typename ValueType>
-    constexpr implementation::matrix<DimX, DimY, ValueType> reflect(const implementation::matrix<DimX, DimY, ValueType>& incident, const implementation::matrix<DimX, DimY, ValueType>& normal)
+    template<size_t DimX, size_t DimY, typename ValueType, implementation::matrix_kind Kind>
+    constexpr implementation::matrix<DimX, DimY, ValueType, Kind> reflect(const implementation::matrix<DimX, DimY, ValueType, Kind>& incident, const implementation::matrix<DimX, DimY, ValueType, Kind>& normal)
     {
         return incident - ValueType(2) * dot(incident, normal) * normal;
     }

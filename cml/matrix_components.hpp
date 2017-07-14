@@ -27,12 +27,13 @@
 
 #include "definitions.hpp"
 #include "matrix_initializer.hpp"
+#include "matrix_kind.hpp"
 
 namespace cml
 {
     namespace implementation
     {
-        template<size_t DimX, size_t DimY, typename ValueType> class matrix;
+        template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
 
         // stored as | [ [X, Y, Z],
         //           |   [X, Y, Z],
@@ -62,11 +63,11 @@ namespace cml
             public:
 
         // scalar:
-        template<typename ValueType>
-        class matrix_components<matrix<1, 1, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<1, 1, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<1, 1, ValueType>;
+                using matrix_t = matrix<1, 1, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(1, 1, matrix_t)
 
             public:
@@ -79,11 +80,11 @@ namespace cml
 
         // vectors:
 
-        template<typename ValueType>
-        class matrix_components<matrix<2, 1, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<2, 1, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<2, 1, ValueType>;
+                using matrix_t = matrix<2, 1, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(2, 1, matrix_t)
 
             public:
@@ -97,11 +98,11 @@ namespace cml
                     };
                 };
         };
-        template<typename ValueType>
-        class matrix_components<matrix<1, 2, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<1, 2, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<1, 2, ValueType>;
+                using matrix_t = matrix<1, 2, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(1, 2, matrix_t)
 
             public:
@@ -116,11 +117,11 @@ namespace cml
                 };
         };
 
-        template<typename ValueType>
-        class matrix_components<matrix<3, 1, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<3, 1, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<3, 1, ValueType>;
+                using matrix_t = matrix<3, 1, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(3, 1, matrix_t)
 
             public:
@@ -135,11 +136,11 @@ namespace cml
                     };
                 };
         };
-        template<typename ValueType>
-        class matrix_components<matrix<1, 3, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<1, 3, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<1, 3, ValueType>;
+                using matrix_t = matrix<1, 3, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(1, 3, matrix_t)
 
             public:
@@ -155,11 +156,11 @@ namespace cml
                 };
         };
 
-        template<typename ValueType>
-        class matrix_components<matrix<4, 1, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<4, 1, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<4, 1, ValueType>;
+                using matrix_t = matrix<4, 1, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(4, 1, matrix_t)
 
             public:
@@ -176,11 +177,11 @@ namespace cml
                 };
         };
 
-        template<typename ValueType>
-        class matrix_components<matrix<1, 4, ValueType>>
+        template<typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<1, 4, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<1, 4, ValueType>;
+                using matrix_t = matrix<1, 4, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(1, 4, matrix_t)
 
             public:
@@ -197,11 +198,11 @@ namespace cml
                 };
         };
 
-        template<size_t DimX, typename ValueType>
-        class matrix_components<matrix<DimX, 1, ValueType>>
+        template<size_t DimX, typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<DimX, 1, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<DimX, 1, ValueType>;
+                using matrix_t = matrix<DimX, 1, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(DimX, 1, matrix_t)
 
             public:
@@ -218,11 +219,11 @@ namespace cml
                 };
         };
 
-        template<size_t DimY, typename ValueType>
-        class matrix_components<matrix<1, DimY, ValueType>>
+        template<size_t DimY, typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<1, DimY, ValueType, Kind>>
         {
             private:
-                using matrix_t = matrix<1, DimY, ValueType>;
+                using matrix_t = matrix<1, DimY, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(1, DimY, matrix_t)
 
             public:
@@ -240,20 +241,20 @@ namespace cml
         };
 
         // matrices (somewhat generic)
-        template<size_t DimX, size_t DimY, typename ValueType>
-        class matrix_components<matrix<DimY, DimX, ValueType>>
+        template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind>
+        class matrix_components<matrix<DimY, DimX, ValueType, Kind>>
         {
             private:
                 static_assert(DimY > 1);
                 static_assert(DimX > 1); // only matches matrices
-                using matrix_t = matrix<DimX, DimY, ValueType>;
+                using matrix_t = matrix<DimX, DimY, ValueType, Kind>;
                 CML_MATRIX_COMPONENTS_BODY(DimX, DimY, matrix_t)
 
             public:
                 union
                 {
                     std::array<ValueType, DimX * DimY> components = {{ ValueType() }};
-                    std::array<matrix<DimX, 1, ValueType>, DimY> rows;
+                    std::array<matrix<DimX, 1, ValueType, Kind>, DimY> rows;
                 };
         };
 

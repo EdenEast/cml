@@ -22,22 +22,16 @@
 
 #pragma once
 
-#include "../matrix.hpp"
-#include "../traits.hpp"
-#include "length.hpp"
-
 namespace cml
 {
-    template<size_t DimX, size_t DimY, typename ValueType, implementation::matrix_kind Kind>
-    constexpr ValueType distance(const implementation::matrix<DimX, DimY, ValueType, Kind>& v1, const implementation::matrix<DimX, DimY, ValueType, Kind>& v2)
+    namespace implementation
     {
-        static_assert(is_vector<implementation::matrix<DimX, DimY, ValueType, Kind>>::value, "Can only find the distance of two vectors.");
-        return length(v1 - v2);
-    }
-}
-
-#ifdef CML_COMPILE_TEST_CASE
-
-#include "../definitions.hpp"
-
-#endif
+        /// \brief What kind of matrix is being used (yep, quaternions are treated as matrices...)
+        enum class matrix_kind
+        {
+          normal,
+          quaternion,
+          other,
+        };
+    } // namespace implementation
+} // namespace cml

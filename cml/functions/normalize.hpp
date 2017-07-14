@@ -28,10 +28,10 @@
 
 namespace cml
 {
-    template<size_t DimX, size_t DimY, typename ValueType>
-    constexpr implementation::matrix<DimX, DimY, ValueType> normalize(const implementation::matrix<DimX, DimY, ValueType>& v)
+    template<size_t DimX, size_t DimY, typename ValueType, implementation::matrix_kind Kind>
+    constexpr implementation::matrix<DimX, DimY, ValueType, Kind> normalize(const implementation::matrix<DimX, DimY, ValueType, Kind>& v)
     {
-        static_assert(is_vector<implementation::matrix<DimX, DimY, ValueType>>::value, "Can only normalize a vector.");
+        static_assert(is_vector<implementation::matrix<DimX, DimY, ValueType, Kind>>::value, "Can only normalize a vector.");
         return v * (ValueType(1) / length(v));
     }
 }
