@@ -34,6 +34,7 @@
 // functions
 #include "functions/abs.hpp"
 #include "functions/clamp.hpp"
+#include "functions/cross.hpp"
 #include "functions/distance.hpp"
 #include "functions/dot.hpp"
 #include "functions/length.hpp"
