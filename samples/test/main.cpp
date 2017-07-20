@@ -57,7 +57,7 @@ int main()
                                                        0, 0, 1));
 
 
-    static_assert(cml::mat<3, 2>{} * cml::mat<2, 3>{} == cml::mat<2, 2>{});
+    static_assert(cml::mat<3, 2>{} * cml::mat<2, 3>{} == cml::mat<2, 2>{0});
     static_assert(cml::mat<3, 2>{} * cml::mat<2, 3>{} == 0.0f);
     static_assert(cml::mat3::identity() * cml::mat3::identity() == cml::mat3::identity());
 

@@ -61,7 +61,11 @@ namespace cml::implementation
 
     public:
         // defaulted copy, assignation, ...
-        constexpr matrix() noexcept = default;
+        constexpr matrix() noexcept
+        {
+            if constexpr(DimX == DimY)
+                *this = make_identity(std::make_index_sequence<DimX>{});
+        }
         constexpr matrix(const matrix&) noexcept = default;
         constexpr matrix& operator = (const matrix&) noexcept = default;
         ~matrix() noexcept = default;
