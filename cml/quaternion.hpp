@@ -21,44 +21,22 @@
 //
 
 #pragma once
-
-#include "fixed_point.hpp"
-
 #include "matrix.hpp"
-#include "operators.hpp"
 
-#include "quaternion.hpp"
-
-#include "angle.hpp"
-#include "definitions.hpp"
-#include "equality.hpp"
-#include "tau.hpp"
-#include "traits.hpp"
-
-// functions
-#include "functions/abs.hpp"
-#include "functions/clamp.hpp"
-#include "functions/cos.hpp"
-#include "functions/cross.hpp"
-#include "functions/distance.hpp"
-#include "functions/dot.hpp"
-#include "functions/exp.hpp"
-#include "functions/factorial.hpp"
-#include "functions/length.hpp"
-#include "functions/lerp.hpp"
-#include "functions/max.hpp"
-#include "functions/min.hpp"
-#include "functions/normalize.hpp"
-#include "functions/pow.hpp"
-#include "functions/reflect.hpp"
-#include "functions/sin.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/tan.hpp"
-#include "functions/transpose.hpp"
-
-/// @brief Main cml namespace
-namespace cml
+namespace cml::implementation
 {
+    template<typename ValueType>
+    class quaternion : public matrix<4, 1, ValueType, matrix_kind::quaternion>
+    {
+    public:
+        using matrix<4, 1, ValueType, matrix_kind::quaternion>::matrix;
+        constexpr quaternion() noexcept : quaternion(0, 0, 0, 1) {}
+        static constexpr quaternion<ValueType> identity() { return quaternion<ValueType>(0, 0, 0, 1); }
+    };
+} // namespace cml::implementation
 
-} // namespace cml
+#ifdef CML_COMPILE_TEST_CASE
 
+static_assert(cml::implementation::quaternion<float>() == cml::implementation::matrix<4, 1, float, cml::implementation::matrix_kind::quaternion>(0, 0, 0, 1));
+
+#endif
