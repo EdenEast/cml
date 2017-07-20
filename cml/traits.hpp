@@ -33,6 +33,7 @@ namespace cml
     namespace implementation
     {
         template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
+        template<typename ValueType> class quaternion;
     }
 
     template<typename ValueType>
@@ -52,6 +53,15 @@ namespace cml
 
     template<size_t DimY, size_t DimX, typename ValueType, implementation::matrix_kind Kind>
     struct is_matrix<implementation::matrix<DimX, DimY, ValueType, Kind>> : public std::true_type {};
+    
+    template<typename X>
+    struct is_quaternion : public std::false_type {};
+    
+    template<typename ValueType>
+    struct is_quaternion<implementation::quaternion<ValueType>> : public std::true_type {};
+    
+    template<typename ValueType>
+    struct is_quaternion<implementation::matrix<4, 1, ValueType, implementation::matrix_kind::quaternion>> : public std::true_type {};
 
     template<typename X> struct matrix_traits {};
     template<size_t DimY, size_t DimX, typename ValueType, implementation::matrix_kind Kind>
