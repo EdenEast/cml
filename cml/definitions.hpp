@@ -33,6 +33,7 @@ namespace cml
         template<typename ValueType, angle_kind Kind> class angle;
         template<typename ValueType> using degree = angle<ValueType, angle_kind::degree>;
         template<typename ValueType> using radian = angle<ValueType, angle_kind::radian>;
+        template<typename ValueType> class quaternion;
     }
 
     // Fixed points
@@ -180,6 +181,13 @@ namespace cml
     using uf1616scalar = scalar<uf1616>;
     using uf0824scalar = scalar<uf0824>;
     using uf0032scalar = scalar<uf0032>;
+
+    // Quaternion
+    template<typename ValueType>
+    using quaternion = implementation::quaternion<ValueType>;
+
+    using quat = quaternion<float>;
+    using dquat = quaternion<double>;
 
     // Angle
     template<typename ValueType> using degree = implementation::angle<ValueType, implementation::angle_kind::degree>;
