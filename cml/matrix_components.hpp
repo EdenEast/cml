@@ -40,23 +40,23 @@ namespace cml::implementation
     template<typename Child> class matrix_components {};
 
 #define CML_MATRIX_COMPONENTS_BODY(x, y, m) \
-        protected: \
-            constexpr matrix_components() noexcept : components{{ValueType()}} {} \
-            constexpr matrix_components(const matrix_components&o) noexcept : components{o.components} {} \
-            constexpr matrix_components& operator = (const matrix_components&o) noexcept { components = o.components; return *this; } \
+    protected: \
+        constexpr matrix_components() noexcept : components{{ValueType()}} {} \
+        constexpr matrix_components(const matrix_components&o) noexcept : components{o.components} {} \
+        constexpr matrix_components& operator = (const matrix_components&o) noexcept { components = o.components; return *this; } \
 \
-            constexpr matrix_components(const std::array<ValueType, x * y>& ar) noexcept : components {ar} {} \
+        constexpr matrix_components(const std::array<ValueType, x * y>& ar) noexcept : components {ar} {} \
 \
-            template<typename... Args> \
-            constexpr matrix_components(Args &&... args) noexcept \
-            : matrix_components(std::make_index_sequence<count_components_from_args<Args...>::count>{}, std::forward<Args>(args)...) \
-            {} \
+        template<typename... Args> \
+        constexpr matrix_components(Args &&... args) noexcept \
+        : matrix_components(std::make_index_sequence<count_components_from_args<Args...>::count>{}, std::forward<Args>(args)...) \
+        {} \
 \
-        private: \
-            template<size_t... Idxs, typename... Args> \
-            constexpr matrix_components(std::index_sequence<Idxs...>, Args &&... args) noexcept \
-            : components {{static_cast<ValueType>(get_nth_component<Idxs>(std::forward<Args>(args)...))...}} \
-            {} \
+    private: \
+        template<size_t... Idxs, typename... Args> \
+        constexpr matrix_components(std::index_sequence<Idxs...>, Args &&... args) noexcept \
+        : components {{static_cast<ValueType>(get_nth_component<Idxs>(std::forward<Args>(args)...))...}} \
+        {} \
 \
         public:
 
@@ -194,6 +194,32 @@ namespace cml::implementation
                     union { ValueType w; ValueType a; ValueType v; };
                 };
             };
+    };
+
+    template<typename ValueType>
+    class matrix_components<matrix<4, 1, ValueType, matrix_kind::quaternion>>
+    {
+    private:
+        using matrix_t = matrix<4, 1, ValueType, matrix_kind::quaternion>;
+        CML_MATRIX_COMPONENTS_BODY(4, 1, matrix_t)
+
+    public:
+        union
+        {
+            std::array<ValueType, 4> components = {{ ValueType() }};
+            struct
+            {
+                union { ValueType x; ValueType r; ValueType s; };
+                union { ValueType y; ValueType g; ValueType t; };
+                union { ValueType z; ValueType b; ValueType u; };
+                union { ValueType w; ValueType a; ValueType v; };
+            };
+            struct
+            {
+                matrix<3, 1, ValueType, matrix_kind::normal> vector;
+                ValueType scalar;
+            };
+        };
     };
 
     template<size_t DimX, typename ValueType, matrix_kind Kind>
