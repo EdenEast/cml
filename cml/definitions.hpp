@@ -31,6 +31,7 @@ namespace cml
         template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
         template<typename ValueType> class degree;
         template<typename ValueType> class radian;
+        template<typename ValueType> class quaternion;
     }
 
     // Fixed points
@@ -178,6 +179,13 @@ namespace cml
     using uf1616scalar = scalar<uf1616>;
     using uf0824scalar = scalar<uf0824>;
     using uf0032scalar = scalar<uf0032>;
+
+    // Quaternion
+    template<typename ValueType>
+    using quaternion = implementation::quaternion<ValueType>;
+
+    using quat = quaternion<float>;
+    using dquat = quaternion<double>;
 
     // Angle
     using deg = implementation::degree<float>;
