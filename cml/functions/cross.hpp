@@ -38,7 +38,7 @@ namespace cml
                              v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0]);
         }
     }
-    
+
     template<typename ValueType>
     constexpr auto cross(const ValueType& v1, const ValueType& v2) -> auto
     {

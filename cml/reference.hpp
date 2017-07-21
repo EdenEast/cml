@@ -22,60 +22,57 @@
 
 #pragma once
 
-namespace cml
+namespace cml::implementation
 {
-    namespace implementation
+    template<typename ValueType>
+    struct reference
     {
-        template<typename ValueType>
-        struct reference
+        constexpr reference() noexcept = default;
+        constexpr reference(const reference&) noexcept = default;
+        constexpr reference(ValueType* v) noexcept : ptr(v) {};
+        constexpr reference &operator = (const reference &o)
         {
-            constexpr reference() noexcept = default;
-            constexpr reference(const reference&) noexcept = default;
-            constexpr reference(ValueType* v) noexcept : ptr(v) {};
-            constexpr reference &operator = (const reference &o)
-            {
-                *ptr = *o.ptr;
-                return *this;
-            }
-            constexpr reference &operator = (ValueType o)
-            {
-                *ptr = o;
-                return *this;
-            }
+            *ptr = *o.ptr;
+            return *this;
+        }
+        constexpr reference &operator = (ValueType o)
+        {
+            *ptr = o;
+            return *this;
+        }
 
-            using value_type = ValueType;
-            ValueType* ptr = nullptr;
+        using value_type = ValueType;
+        ValueType* ptr = nullptr;
 
-            constexpr operator ValueType& () const noexcept { return *ptr; }
+        constexpr operator ValueType& () const noexcept { return *ptr; }
 
-            template<typename Type>
-            explicit constexpr operator Type () const noexcept { return static_cast<Type>(*ptr); }
+        template<typename Type>
+        explicit constexpr operator Type () const noexcept { return static_cast<Type>(*ptr); }
 
-            constexpr reference &operator += (const reference& o) noexcept { *ptr += *o.ptr; return *this; }
-            constexpr reference &operator += (const ValueType& o) noexcept { *ptr += o; return *this; }
-            constexpr reference &operator -= (const reference& o) noexcept { *ptr -= *o.ptr; return *this; }
-            constexpr reference &operator -= (const ValueType& o) noexcept { *ptr -= o; return *this; }
-            constexpr reference &operator *= (const reference& o) noexcept { *ptr *= *o.ptr; return *this; }
-            constexpr reference &operator *= (const ValueType& o) noexcept { *ptr *= o; return *this; }
-            constexpr reference &operator /= (const reference& o) noexcept { *ptr /= *o.ptr; return *this; }
-            constexpr reference &operator /= (const ValueType& o) noexcept { *ptr /= o; return *this; }
+        constexpr reference &operator += (const reference& o) noexcept { *ptr += *o.ptr; return *this; }
+        constexpr reference &operator += (const ValueType& o) noexcept { *ptr += o; return *this; }
+        constexpr reference &operator -= (const reference& o) noexcept { *ptr -= *o.ptr; return *this; }
+        constexpr reference &operator -= (const ValueType& o) noexcept { *ptr -= o; return *this; }
+        constexpr reference &operator *= (const reference& o) noexcept { *ptr *= *o.ptr; return *this; }
+        constexpr reference &operator *= (const ValueType& o) noexcept { *ptr *= o; return *this; }
+        constexpr reference &operator /= (const reference& o) noexcept { *ptr /= *o.ptr; return *this; }
+        constexpr reference &operator /= (const ValueType& o) noexcept { *ptr /= o; return *this; }
 
-            constexpr ValueType operator + (const reference& o) const noexcept { return *ptr + *o.ptr; }
-            constexpr ValueType operator + (const ValueType& o) const noexcept { return *ptr + o; }
-            constexpr ValueType operator - (const reference& o) const noexcept { return *ptr - *o.ptr; }
-            constexpr ValueType operator - (const ValueType& o) const noexcept { return *ptr - o; }
-            constexpr ValueType operator * (const reference& o) const noexcept { return *ptr * *o.ptr; }
-            constexpr ValueType operator * (const ValueType& o) const noexcept { return *ptr * o; }
-            constexpr ValueType operator / (const reference& o) const noexcept { return *ptr / *o.ptr; }
-            constexpr ValueType operator / (const ValueType& o) const noexcept { return *ptr / o; }
-        };
+        constexpr ValueType operator + (const reference& o) const noexcept { return *ptr + *o.ptr; }
+        constexpr ValueType operator + (const ValueType& o) const noexcept { return *ptr + o; }
+        constexpr ValueType operator - (const reference& o) const noexcept { return *ptr - *o.ptr; }
+        constexpr ValueType operator - (const ValueType& o) const noexcept { return *ptr - o; }
+        constexpr ValueType operator * (const reference& o) const noexcept { return *ptr * *o.ptr; }
+        constexpr ValueType operator * (const ValueType& o) const noexcept { return *ptr * o; }
+        constexpr ValueType operator / (const reference& o) const noexcept { return *ptr / *o.ptr; }
+        constexpr ValueType operator / (const ValueType& o) const noexcept { return *ptr / o; }
+    };
 
-        // traits
-        template<typename T> struct is_reference : public std::false_type {};
-        template<typename T> struct is_reference<reference<T>> : public std::true_type {};
+    // traits
+    template<typename T> struct is_reference : public std::false_type {};
+    template<typename T> struct is_reference<reference<T>> : public std::true_type {};
 
-        template<typename T> struct remove_reference { using type = T; };
-        template<typename T> struct remove_reference<reference<T>> : public remove_reference<T> {};
+    template<typename T> struct remove_reference { using type = T; };
+    template<typename T> struct remove_reference<reference<T>> : public remove_reference<T> {};
 
-    } // namespace implementation
-} // namespace cml
+} // namespace cml::implementation

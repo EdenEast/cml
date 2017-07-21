@@ -178,20 +178,20 @@ namespace cml
     using uf1616scalar = scalar<uf1616>;
     using uf0824scalar = scalar<uf0824>;
     using uf0032scalar = scalar<uf0032>;
-    
+
     // Angle
     using deg = implementation::degree<float>;
     using rad = implementation::radian<float>;
     using ddeg = implementation::degree<double>;
     using drad = implementation::radian<double>;
-    
+
     using f88deg = implementation::degree<f88>;
     using f88rad = implementation::radian<f88>;
     using f1616deg = implementation::degree<f1616>;
     using f1616rad = implementation::radian<f1616>;
     using f0824deg = implementation::degree<f0824>;
     using f0824rad = implementation::radian<f0824>;
-    
+
     using uf88deg = implementation::degree<uf88>;
     using uf88rad = implementation::radian<uf88>;
     using uf1616deg = implementation::degree<uf1616>;

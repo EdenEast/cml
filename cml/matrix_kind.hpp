@@ -22,16 +22,13 @@
 
 #pragma once
 
-namespace cml
+namespace cml::implementation
 {
-    namespace implementation
+    /// \brief What kind of matrix is being used (yep, quaternions are treated as matrices...)
+    enum class matrix_kind
     {
-        /// \brief What kind of matrix is being used (yep, quaternions are treated as matrices...)
-        enum class matrix_kind
-        {
-          normal,
-          quaternion,
-          other,
-        };
-    } // namespace implementation
-} // namespace cml
+        normal,
+        quaternion,
+        other,
+    };
+} // namespace cml::implementation
