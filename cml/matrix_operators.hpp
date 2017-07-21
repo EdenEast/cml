@@ -26,12 +26,50 @@
 #include "matrix.hpp"
 #include "fixed_point.hpp"
 #include "reference.hpp"
+#include "traits.hpp"
+#include "functions/cross.hpp"
+#include "functions/dot.hpp"
 
 namespace cml::implementation
 {
 #ifdef _MSC_VER
     using ar_t = int[];
 #endif
+
+        // quaternion operations
+
+        template<typename VType>
+        constexpr auto quat_qq_mul(const quaternion<VType>& v1, quaternion<VType>&& v2) -> auto
+        {
+            return quaternion<VType>(
+                v1.components[3] * v2.components[0] + v1.components[0] * v2.components[3] + v1.components[1] * v2.components[2] - v1.components[2] * v2.components[1],
+                v1.components[3] * v2.components[1] - v1.components[0] * v2.components[2] + v1.components[1] * v2.components[3] + v1.components[2] * v2.components[0],
+                v1.components[3] * v2.components[2] + v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0] + v1.components[2] * v2.components[3],
+                v1.components[3] * v2.components[3] - v1.components[0] * v2.components[0] - v1.components[1] * v2.components[1] - v1.components[2] * v2.components[2]);
+        }
+
+        template<typename VType>
+        constexpr auto quat_qv_mul(const quaternion<VType>& v1, VType&& v2) -> auto
+        {
+            // https://gamedev.stackexchange.com/a/50545
+            constexpr auto vp = v1.vec_part();
+            constexpr auto sp = v1.scalar_part();
+            return SType(VType(2) * dot(vp, v2) * vp + (sp * sp - dot(vp, vp)) * v2 + VType(2) * sp * cross(vp, v1));
+        }
+
+        template<typename VType, typename SType>
+        constexpr auto quat_mul(const VType& v1, SType&& v2) -> auto
+        {
+            if constexpr(is_quaternion<SType>::value)
+                return quat_qq_mul(v1, v2);
+            else if constexpr(is_vector<SType>::value)
+            {
+                constexpr auto dim = matrix_traits<SType>::dimx > matrix_traits<SType>::dimy ? matrix_traits<SType>::dimx : matrix_traits<SType>::dimy;
+                static_assert(dim == 3, "can only mulltiply a quaternion by a 3 component vector");
+                return quat_qv_mul(v1, v2);
+            }
+            return quaternion<VType>();
+        }
 
     // matrix - matrix operations
 
