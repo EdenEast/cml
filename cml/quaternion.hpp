@@ -32,11 +32,15 @@ namespace cml::implementation
         using matrix<4, 1, ValueType, matrix_kind::quaternion>::matrix;
         constexpr quaternion() noexcept : quaternion(0, 0, 0, 1) {}
         static constexpr quaternion<ValueType> identity() { return quaternion<ValueType>(0, 0, 0, 1); }
+        constexpr matrix<3, 1, ValueType, matrix_kind::normal> vec_part() { return matrix<3, 1, ValueType, matrix_kind::normal>(this->components[0], this->components[1], this->components[2]); }
+        constexpr ValueType scalar_part() { return this->components[3]; }
     };
 } // namespace cml::implementation
 
 #ifdef CML_COMPILE_TEST_CASE
 
 static_assert(cml::implementation::quaternion<float>() == cml::implementation::matrix<4, 1, float, cml::implementation::matrix_kind::quaternion>(0, 0, 0, 1));
+static_assert(cml::implementation::quaternion<float>(1, 2, 3, 1).vec_part() == cml::implementation::matrix<3, 1, float, cml::implementation::matrix_kind::normal>(1, 2, 3));
+static_assert(cml::implementation::quaternion<float>(1, 2, 3, 1).scalar_part() == 1.0f);
 
 #endif
