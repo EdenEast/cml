@@ -22,39 +22,24 @@
 
 #pragma once
 #include <cstddef>
+#include "../traits.hpp"
+#include "../equality.hpp"
 
 namespace cml
 {
     namespace implementation
     {
-        template<typename VT> struct get_iterator_number { static constexpr size_t count = sizeof(VT) * 8; };
-        template<> struct get_iterator_number<float> { static constexpr size_t count = 24; };
-        template<> struct get_iterator_number<double> { static constexpr size_t count = 53; };
-
         template<typename ValueType>
-        constexpr ValueType sqrt_impl(ValueType number)
+        constexpr auto sqrt_helper(const ValueType& a, const ValueType& b) -> ValueType
         {
-            ValueType res = number;
-            ValueType it = number;
-            for (size_t i = 0; i < get_iterator_number<ValueType>::count; ++i)
-            {
-                it /= ValueType(2);
-                const ValueType pow = res * res;
-                if (pow == number)
-                    break;
-                else if (pow > number)
-                    res -= it;
-                else
-                    res += it;
-            }
-            return res;
+            return is_close(a, b * b) ? b : sqrt_helper(a, (b + a / b) / ValueType{2});
         }
     }
 
     template<typename ValueType>
-    constexpr ValueType sqrt(ValueType v)
+    constexpr auto sqrt(ValueType v) -> ValueType
     {
-        return implementation::sqrt_impl(v);
+        return implementation::sqrt_helper(v, v);
     }
 }
 
@@ -62,7 +47,7 @@ namespace cml
 
 #include "../traits.hpp"
 
-static_assert(cml::is_equal<2>(5.0, cml::sqrt(5.0) * cml::sqrt(5.0)));
+static_assert(cml::is_equal(5.0, cml::sqrt(5.0) * cml::sqrt(5.0)));
 static_assert(5.0f == cml::sqrt(5.0f) * cml::sqrt(5.0f));
 
 #endif

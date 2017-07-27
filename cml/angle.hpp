@@ -23,6 +23,7 @@
 #pragma once
 
 #include "traits.hpp"
+#include "equality.hpp"
 
 namespace cml::implementation
 {
