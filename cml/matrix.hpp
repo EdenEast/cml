@@ -31,6 +31,11 @@
 #include "vector_component_table.hpp"
 #include "reference.hpp"
 
+#ifdef _MSC_VER
+#pragma warning( push )  
+#pragma warning(disable:4309)
+#endif
+
 namespace cml::implementation
 {
     template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
@@ -246,4 +251,8 @@ namespace cml::implementation
             return matrix<DimX, DimY, Type, OKind>(static_cast<Type>(this->components[Idxs])...);
         }
     };
+
+#ifdef _MSC_VER
+#pragma warning( pop )  
+#endif
 } // namespace cml::implementation
