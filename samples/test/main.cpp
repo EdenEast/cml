@@ -126,9 +126,9 @@ int main()
 
     CHECK(cml::is_equal(cml::sqrt(5.0), std::sqrt(5.0)));
     CHECK(cml::sqrt(5.0f) == std::sqrt(5.0f));
-
-    cml::is_equal(5.0, cml::sqrt(5.0) * cml::sqrt(5.0));
-    cml::is_equal(5.0f, cml::sqrt(5.0f) * cml::sqrt(5.0f));
+    
+    CHECK(std::sqrt(5.0) == cml::sqrt(5.0));
+    CHECK(std::sqrt(5.f) == cml::sqrt(5.f));
 
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;

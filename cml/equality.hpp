@@ -22,34 +22,22 @@
 
 #pragma once
 
-#include "fixed_point.hpp"
-
-#include "matrix.hpp"
-#include "matrix_operators.hpp"
-
-#include "angle.hpp"
-#include "definitions.hpp"
-#include "equality.hpp"
-#include "traits.hpp"
-
-// functions
 #include "functions/abs.hpp"
-#include "functions/clamp.hpp"
-#include "functions/cross.hpp"
-#include "functions/distance.hpp"
-#include "functions/dot.hpp"
-#include "functions/length.hpp"
-#include "functions/lerp.hpp"
 #include "functions/max.hpp"
-#include "functions/min.hpp"
-#include "functions/normalize.hpp"
-#include "functions/reflect.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/transpose.hpp"
+#include <limits>
 
-/// @brief Main cml namespace
 namespace cml
 {
-
-} // namespace cml
-
+    template<typename VT, typename ST>
+    constexpr auto is_close(const VT& a, const ST& b)
+    {
+        return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * max(abs(a), abs(b));
+    }
+    
+    template<int ulp = 1, typename ValueType>
+    constexpr bool is_equal(const ValueType v1, const ValueType v2)
+    {
+        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
+            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
+    }
+}

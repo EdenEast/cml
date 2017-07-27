@@ -24,7 +24,7 @@
 
 #include "matrix_kind.hpp"
 #include "definitions.hpp"
-#include "functions/abs.hpp"
+#include <type_traits>
 #include <limits>
 
 namespace cml
@@ -63,11 +63,4 @@ namespace cml
         static constexpr implementation::matrix_kind kind = Kind;
         using type = ValueType;
     };
-
-    template<int ulp = 1, typename ValueType>
-    constexpr bool is_equal(const ValueType v1, const ValueType v2)
-    {
-        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
-            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
-    }
 }
