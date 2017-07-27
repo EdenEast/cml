@@ -22,36 +22,14 @@
 
 #pragma once
 
-#include "fixed_point.hpp"
-
-#include "matrix.hpp"
-#include "matrix_operators.hpp"
-
-#include "angle.hpp"
-#include "definitions.hpp"
-#include "equality.hpp"
-#include "traits.hpp"
-
-// functions
-#include "functions/abs.hpp"
-#include "functions/clamp.hpp"
-#include "functions/cross.hpp"
-#include "functions/distance.hpp"
-#include "functions/dot.hpp"
-#include "functions/factorial.hpp"
-#include "functions/length.hpp"
-#include "functions/lerp.hpp"
-#include "functions/max.hpp"
-#include "functions/min.hpp"
-#include "functions/normalize.hpp"
-#include "functions/pow.hpp"
-#include "functions/reflect.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/transpose.hpp"
-
-/// @brief Main cml namespace
 namespace cml
 {
+    template<typename ValueType>
+    constexpr auto factorial(const ValueType& n) -> ValueType
+    {
+        return n > 0 ? n * factorial(n - ValueType{1}) : ValueType{1};
+    }
+}
 
-} // namespace cml
-
+static_assert(cml::factorial(5) == 120);
+static_assert(cml::factorial(5.0) == 120.0);

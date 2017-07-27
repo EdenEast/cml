@@ -21,37 +21,15 @@
 //
 
 #pragma once
+#include <cstdint>
 
-#include "fixed_point.hpp"
-
-#include "matrix.hpp"
-#include "matrix_operators.hpp"
-
-#include "angle.hpp"
-#include "definitions.hpp"
-#include "equality.hpp"
-#include "traits.hpp"
-
-// functions
-#include "functions/abs.hpp"
-#include "functions/clamp.hpp"
-#include "functions/cross.hpp"
-#include "functions/distance.hpp"
-#include "functions/dot.hpp"
-#include "functions/factorial.hpp"
-#include "functions/length.hpp"
-#include "functions/lerp.hpp"
-#include "functions/max.hpp"
-#include "functions/min.hpp"
-#include "functions/normalize.hpp"
-#include "functions/pow.hpp"
-#include "functions/reflect.hpp"
-#include "functions/sqrt.hpp"
-#include "functions/transpose.hpp"
-
-/// @brief Main cml namespace
 namespace cml
 {
+    template<typename ValueType>
+    constexpr auto pow(const ValueType& value, const std::uint32_t & exp) -> ValueType
+    {
+        return exp > 0 ? value * pow(value, exp - 1u) : ValueType{1};
+    }
+}
 
-} // namespace cml
-
+static_assert(cml::pow(2, 8) == 256);
