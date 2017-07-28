@@ -30,11 +30,13 @@
 #include "angle.hpp"
 #include "definitions.hpp"
 #include "equality.hpp"
+#include "pi.hpp"
 #include "traits.hpp"
 
 // functions
 #include "functions/abs.hpp"
 #include "functions/clamp.hpp"
+#include "functions/cos.hpp"
 #include "functions/cross.hpp"
 #include "functions/distance.hpp"
 #include "functions/dot.hpp"
@@ -46,7 +48,9 @@
 #include "functions/normalize.hpp"
 #include "functions/pow.hpp"
 #include "functions/reflect.hpp"
+#include "functions/sin.hpp"
 #include "functions/sqrt.hpp"
+#include "functions/tan.hpp"
 #include "functions/transpose.hpp"
 
 /// @brief Main cml namespace

@@ -22,28 +22,28 @@
 
 #pragma once
 
-#include "functions/abs.hpp"
-#include "functions/max.hpp"
-#include <limits>
+#include "sin.hpp"
 
 namespace cml
 {
-    template<typename VT, typename ST>
-    constexpr auto is_close(const VT& a, const ST& b)
+    namespace implementation
     {
-        return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * max(abs(a), abs(b));
-    }
-    
-    template<int ulp = 1, typename ValueType>
-    constexpr bool is_equal(const ValueType v1, const ValueType v2)
-    {
-        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
-            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
+        template<typename ValueType>
+        constexpr auto cos_impl(const ValueType v) -> ValueType
+        {
+            return trig_series(v, ValueType{1}, ValueType{2}, ValueType{3}, ValueType{-1}, v*v);
+        }
     }
     
     template<typename ValueType>
-    constexpr bool feq(const ValueType& x, const ValueType& y)
+    constexpr auto cos(const implementation::radian<ValueType> v) -> ValueType
     {
-        return abs(x - y) <= std::numeric_limits<ValueType>::epsilon();
+        return implementation::cos_impl(static_cast<ValueType>(v));
+    }
+    
+    template<typename ValueType>
+    constexpr auto cos(const implementation::degree<ValueType>& v) -> ValueType
+    {
+        return cos(implementation::radian<ValueType>{v});
     }
 }

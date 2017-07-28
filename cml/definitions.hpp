@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "angle_kind.hpp"
 #include "matrix_kind.hpp"
 
 namespace cml
@@ -29,8 +30,9 @@ namespace cml
     namespace implementation
     {
         template<size_t DimX, size_t DimY, typename ValueType, matrix_kind Kind> class matrix;
-        template<typename ValueType> class degree;
-        template<typename ValueType> class radian;
+        template<typename ValueType, angle_kind Kind> class angle;
+        template<typename ValueType> using degree = angle<ValueType, angle_kind::degree>;
+        template<typename ValueType> using radian = angle<ValueType, angle_kind::radian>;
     }
 
     // Fixed points

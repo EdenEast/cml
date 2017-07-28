@@ -22,28 +22,11 @@
 
 #pragma once
 
-#include "functions/abs.hpp"
-#include "functions/max.hpp"
-#include <limits>
-
-namespace cml
+namespace cml::implementation
 {
-    template<typename VT, typename ST>
-    constexpr auto is_close(const VT& a, const ST& b)
+    enum class angle_kind
     {
-        return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * max(abs(a), abs(b));
-    }
-    
-    template<int ulp = 1, typename ValueType>
-    constexpr bool is_equal(const ValueType v1, const ValueType v2)
-    {
-        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
-            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
-    }
-    
-    template<typename ValueType>
-    constexpr bool feq(const ValueType& x, const ValueType& y)
-    {
-        return abs(x - y) <= std::numeric_limits<ValueType>::epsilon();
-    }
+        degree,
+        radian
+    };
 }

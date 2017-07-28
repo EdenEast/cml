@@ -22,28 +22,16 @@
 
 #pragma once
 
-#include "functions/abs.hpp"
-#include "functions/max.hpp"
-#include <limits>
+#include "fixed_point.hpp"
+#include <type_traits>
 
 namespace cml
 {
-    template<typename VT, typename ST>
-    constexpr auto is_close(const VT& a, const ST& b)
-    {
-        return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * max(abs(a), abs(b));
-    }
-    
-    template<int ulp = 1, typename ValueType>
-    constexpr bool is_equal(const ValueType v1, const ValueType v2)
-    {
-        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
-            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
-    }
-    
     template<typename ValueType>
-    constexpr bool feq(const ValueType& x, const ValueType& y)
+    struct pi
     {
-        return abs(x - y) <= std::numeric_limits<ValueType>::epsilon();
-    }
+        static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "pi must be a floating point or fixed point type");
+        static constexpr ValueType value = ValueType{3.141592653589793};
+        static constexpr ValueType half_value = ValueType{1.570796326794897};
+    };
 }

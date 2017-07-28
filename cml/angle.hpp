@@ -22,322 +22,187 @@
 
 #pragma once
 
+#include "angle_kind.hpp"
 #include "traits.hpp"
 #include "equality.hpp"
 
 namespace cml::implementation
-{
-    template<typename ValueType>
-    class degree;
-
-    template<typename ValueType>
-    class radian;
-
-    template<typename ValueType>
-    class degree
+{    
+    template<typename ValueType, angle_kind Kind>
+    constexpr auto angle_convert_value() -> ValueType
     {
-        static constexpr ValueType Rad2Deg = static_cast<ValueType>(57.295779513082321);
+        if constexpr(Kind == angle_kind::degree)
+            return {57.295779513082321};
+        else
+            return {0.0174532925199432958};
+    }
+    
+    template<typename ValueType, angle_kind Kind>
+    class angle
+    {
         static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "ValueType must be a floating|fixed point.");
     public:
         using value_type = ValueType;
-        using this_type = degree<ValueType>;
-
-        constexpr degree() noexcept = default;
-        constexpr degree(const this_type& other) noexcept
-        : angle(other.angle)
+        using this_type = angle<ValueType, Kind>;
+        
+        constexpr angle() noexcept = default;
+        constexpr angle(const this_type& other) noexcept
+        : value(other.value)
         {
         }
-
-        explicit constexpr degree(ValueType deg) noexcept
-        : angle(deg)
+        
+        explicit constexpr angle(ValueType value) noexcept
+        : value(value)
         {
         }
-
-        explicit constexpr degree(const radian<ValueType>& rad) noexcept
-        : degree(static_cast<ValueType>(rad) * Rad2Deg)
+        
+        template<angle_kind DiffKind>
+        explicit constexpr angle(angle<ValueType, DiffKind> other) noexcept
+        : value(static_cast<ValueType>(other) * angle_convert_value<ValueType, Kind>())
         {
         }
-
-        constexpr this_type& operator=(const this_type& deg) noexcept
+        
+        constexpr this_type& operator=(this_type a) noexcept
         {
-            angle = deg.angle;
+            value = a.value;
             return *this;
         }
-
-        explicit constexpr operator ValueType() const
+        
+        explicit constexpr operator ValueType() const 
         {
-            return angle;
+            return value;
         }
-
-        constexpr this_type operator+(const this_type deg) const
+        
+        template<angle_kind DiffKind>
+        constexpr operator angle<ValueType, DiffKind>() const
         {
-            return this_type(angle + deg.angle);
+            return angle<ValueType, DiffKind>(*this);
         }
-
-        constexpr this_type operator-(const this_type deg) const
+        
+        constexpr this_type operator+(const this_type a) const
         {
-            return this_type(angle - deg.angle);
+            return this_type(value + a.value);
         }
-
+        
+        constexpr this_type operator-(const this_type a) const
+        {
+            return this_type(value - a.value);
+        }
+        
         constexpr this_type operator-() const
         {
-            return this_type(-angle);
+            return this_type(-value);
         }
-
-        constexpr this_type operator*(const this_type deg) const
+        
+        constexpr this_type operator*(const this_type a) const
         {
-            return this_type(angle * deg.angle);
+            return this_type(value * a.value);
         }
-
-        constexpr this_type operator/(const this_type deg) const
+        
+        constexpr this_type operator/(const this_type a) const
         {
-            return this_type(angle / deg.angle);
+            return this_type(value / a.value);
         }
-
-        constexpr this_type operator*(const ValueType value) const
+        
+        constexpr this_type operator*(const ValueType val) const
         {
-            return this_type(angle * value);
+            return this_type(value * val);
         }
-
-        constexpr this_type operator/(const ValueType value) const
+        
+        constexpr this_type operator/(const ValueType val) const
         {
-            return this_type(angle / value);
+            return this_type(value / val);
         }
-
-        constexpr bool operator==(const this_type deg) const
+        
+        constexpr bool operator==(const this_type a) const
         {
-            return is_equal(angle, deg.angle);
+            return is_equal(value, a.value);
         }
-
-        constexpr bool operator==(const radian<ValueType> rad) const
+        
+        template<angle_kind DiffKind>
+        constexpr bool operator==(const angle<ValueType, DiffKind> other) const
         {
-            return is_equal(angle, static_cast<ValueType>(this_type(rad)));
+            return is_equal(value, static_cast<ValueType>(this_type(other)));
         }
-
-        constexpr bool operator!=(const this_type deg) const
+        
+        constexpr bool operator!=(const this_type a) const
         {
-            return !(*this == deg);
+            return !(*this == a);
         }
-
-        constexpr bool operator!=(const radian<ValueType> rad) const
+        
+        template<angle_kind DiffKind>
+        constexpr bool operator!=(const angle<ValueType, DiffKind> a) const
         {
-            return !(*this == rad);
+            return !(*this == a);
         }
-
-        constexpr bool operator<(const this_type deg) const
+        
+        constexpr bool operator<(const this_type a) const
         {
-            return angle < deg.angle;
+            return value < a.value;
         }
-
-        constexpr bool operator>(const this_type deg) const
+        
+        constexpr bool operator>(const this_type a) const
         {
-            return angle > deg.angle;
+            return value > a.value;
         }
-
+        
         constexpr this_type& operator+=(const ValueType val)
         {
-            angle += val;
+            value += val;
             return *this;
         }
-
-        constexpr this_type& operator+=(const this_type deg)
+        
+        constexpr this_type& operator+=(const this_type a)
         {
-            angle += deg.angle;
+            value += a.value;
             return *this;
         }
-
+        
         constexpr this_type& operator-=(const ValueType val)
         {
-            angle -= val;
+            value -= val;
             return *this;
         }
-
-        constexpr this_type& operator-=(const this_type deg)
+        
+        constexpr this_type& operator-=(const this_type a)
         {
-            angle -= deg.angle;
+            value -= a.value;
             return *this;
         }
-
+        
         constexpr this_type& operator*=(const ValueType val)
         {
-            angle *= val;
+            value *= val;
             return *this;
         }
-
-        constexpr this_type& operator*=(const this_type deg)
+        
+        constexpr this_type& operator*=(const this_type a)
         {
-            angle *= deg.angle;
+            value *= a.value;
             return *this;
         }
-
+        
         constexpr this_type& operator/=(const ValueType val)
         {
-            angle /= val;
+            value /= val;
             return *this;
         }
-
-        constexpr this_type& operator/=(const this_type deg)
+        
+        constexpr this_type& operator/=(const this_type a)
         {
-            angle /= deg.angle;
+            value /= a.value;
             return *this;
         }
-
+        
     private:
-        ValueType angle = static_cast<ValueType>(0);
+        ValueType value = ValueType{0};
     };
-
+    
     template<typename ValueType>
-    class radian
-    {
-        static constexpr ValueType Deg2Rad = static_cast<ValueType>(0.0174532925199432958);
-        static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "ValueType must be a floating|fixed point.");
-    public:
-        using value_type = ValueType;
-        using this_type = radian<ValueType>;
-
-        constexpr radian() noexcept = default;
-        constexpr radian(const this_type& other) noexcept
-        : angle(other.angle)
-        {
-        }
-
-        explicit constexpr radian(const ValueType deg) noexcept
-        : angle(deg)
-        {
-        }
-
-        explicit constexpr radian(const degree<ValueType>& deg) noexcept
-        : radian(static_cast<ValueType>(deg) * Deg2Rad)
-        {
-        }
-
-        constexpr this_type& operator=(const this_type& rad) noexcept
-        {
-            angle = rad.angle;
-            return *this;
-        }
-
-        explicit constexpr operator ValueType() const
-        {
-            return angle;
-        }
-
-        constexpr this_type operator+(const this_type rad) const
-        {
-            return this_type(angle + rad.angle);
-        }
-
-        constexpr this_type operator-(const this_type rad) const
-        {
-            return this_type(angle - rad.angle);
-        }
-
-        constexpr this_type operator-()
-        {
-            return this_type(-angle);
-        }
-
-        constexpr this_type operator*(const this_type rad) const
-        {
-            return this_type(angle * rad.angle);
-        }
-
-        constexpr this_type operator/(const this_type rad) const
-        {
-            return this_type(angle / rad.angle);
-        }
-
-        constexpr this_type operator*(const ValueType value) const
-        {
-            return this_type(angle * value);
-        }
-
-        constexpr this_type operator/(const ValueType value) const
-        {
-            return this_type(angle / value);
-        }
-
-        constexpr bool operator==(const this_type rad) const
-        {
-            return is_equal(angle, rad.angle);
-        }
-
-        constexpr bool operator==(const degree<ValueType> deg) const
-        {
-            return is_equal(angle, static_cast<ValueType>(this_type(deg)));
-        }
-
-        constexpr bool operator!=(const this_type rad) const
-        {
-            return !(*this == rad);
-        }
-
-        constexpr bool operator!=(const degree<ValueType> deg) const
-        {
-            return !(*this == deg);
-        }
-
-        constexpr bool operator<(const this_type rad) const
-        {
-            return angle < rad.angle;
-        }
-
-        constexpr bool operator>(const this_type rad) const
-        {
-            return angle > rad.angle;
-        }
-
-        constexpr this_type& operator+=(const ValueType val)
-        {
-            angle += val;
-            return *this;
-        }
-
-        constexpr this_type& operator+=(const this_type rad)
-        {
-            angle += rad.angle;
-            return *this;
-        }
-
-        constexpr this_type& operator-=(const ValueType val)
-        {
-            angle -= val;
-            return *this;
-        }
-
-        constexpr this_type& operator-=(const this_type rad)
-        {
-            angle -= rad.angle;
-            return *this;
-        }
-
-        constexpr this_type& operator*=(const ValueType val)
-        {
-            angle *= val;
-            return *this;
-        }
-
-        constexpr this_type& operator*=(const this_type rad)
-        {
-            angle *= rad.angle;
-            return *this;
-        }
-
-        constexpr this_type& operator/=(const ValueType val)
-        {
-            angle /= val;
-            return *this;
-        }
-
-        constexpr this_type& operator/=(const this_type rad)
-        {
-            angle /= rad.angle;
-            return *this;
-        }
-
-    private:
-        ValueType angle = static_cast<ValueType>(0);
-    };
+    using degree = angle<ValueType, angle_kind::degree>;
+    
+    template<typename ValueType>
+    using radian = angle<ValueType, angle_kind::radian>;
 } // namespace cml::implementation
 
 #ifdef CML_COMPILE_TEST_CASE
