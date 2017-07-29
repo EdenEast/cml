@@ -133,7 +133,8 @@ int main()
     CHECK(std::sqrt(5.0) == cml::sqrt(5.0));
     CHECK(std::sqrt(5.f) == cml::sqrt(5.f));
 
-    auto rad = cml::drad(cml::ddeg(30.0));
+    auto rad_value = 30.0;
+    auto rad = cml::drad(cml::ddeg(rad_value));
     STD_COMPARE(rad, cml::sin, std::sin);
     STD_COMPARE(rad, cml::cos, std::cos);
     STD_COMPARE(rad, cml::tan, std::tan);
@@ -142,6 +143,16 @@ int main()
     STD_COMPARE(rad, cml::acos, std::acos);
     STD_COMPARE(rad, cml::atan, std::atan);
 
+    STD_COMPARE(rad_value, cml::sinh, std::sinh);
+    STD_COMPARE(rad_value, cml::cosh, std::cosh);
+    STD_COMPARE(rad_value, cml::tanh, std::tanh);
+    
+    double other_value = cml::exp(2.0) - cml::cosh(2.0);
+    STD_COMPARE(other_value, cml::asinh, std::asinh);
+    STD_COMPARE(other_value, cml::acosh, std::acosh);
+    STD_COMPARE(other_value, cml::atanh, std::atanh);
+    
+    
     CHECK(cml::is_equal(cml::atan2(1.0, 1.0), std::atan2(1.0, 1.0)));
 
     // should return 175

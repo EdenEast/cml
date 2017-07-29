@@ -24,6 +24,9 @@
 
 #include "../angle.hpp"
 #include "../equality.hpp"
+#include "exp.hpp"
+#include "log.hpp"
+#include "sqrt.hpp"
 
 namespace cml
 {
@@ -80,4 +83,33 @@ namespace cml
     {
         return asin(implementation::radian<ValueType>{v});
     }
+    
+    template<typename ValueType>
+    constexpr auto sinh(const ValueType v) -> ValueType
+    {
+        return (exp(v) - exp(-v)) / ValueType{2};
+    }
+    
+    template<typename ValueType>
+    constexpr auto asinh(const ValueType v) -> ValueType
+    {
+        return log(v + sqrt(v * v + ValueType{1}));
+    }
 }
+
+#ifdef CML_COMPILE_TEST_CASE
+
+// pi = 3.141592653589793238463
+static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(3.1415927f))), "sin(PIf)");
+static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(3.141592653589793))), "sin(PI)");
+static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(3.1415926535897932385l))), "sin(PIl)");
+
+// pi/2 = 1.570796326794896619231
+static_assert(cml::is_equal(1.0f, cml::sin(cml::rad(1.57079633f))), "sin(PI/2f)");
+static_assert(cml::is_equal(1.0,  cml::sin(cml::rad(1.5707963267948966))), "sin(PI/2)");
+static_assert(cml::is_equal(1.0l, cml::sin(cml::rad(1.5707963267948966192l))), "sin(PI/2l)");
+
+// sin(1) = 0.8414709848078965066525
+static_assert(cml::is_equal(0.8414709848078965, cml::sin(cml::rad(1.0))), "sin(1.0)");
+
+#endif

@@ -22,60 +22,51 @@
 
 #pragma once
 
-#include "sin.hpp"
+#include "exp.hpp"
 
 namespace cml
 {
     namespace implementation
     {
         template<typename ValueType>
-        constexpr auto cos_impl(const ValueType v) -> ValueType
+        constexpr auto log_iter(const ValueType x, const ValueType y) -> ValueType
         {
-            return trig_series(v, ValueType{1}, ValueType{2}, ValueType{3}, ValueType{-1}, v*v);
+            return y + ValueType{2} * (x - exp(y)) / (x + exp(y));
+        }
+
+        template<typename ValueType>
+        constexpr auto log_helper(const ValueType x, const ValueType y) -> ValueType
+        {
+            return feq(y, log_iter(x, y)) ? y : log_helper(x, log_iter(x, y));
         }
         
         template<typename ValueType>
-        constexpr auto acos_impl(const ValueType v) -> ValueType
+        constexpr ValueType log_e{2.71828182845904523536l};
+        
+        template<typename ValueType>
+        constexpr auto log_gt(const ValueType v) -> ValueType
         {
-            return v == ValueType{-1} ? pi<ValueType>::value :
-                   v == ValueType{1} ? 0 :
-                   pi<ValueType>::value / ValueType{2} -asin_impl(v);
+            auto e = log_e<ValueType>;
+            return v > ValueType{0.25} ? log_helper(v, ValueType{0}) : log_gt(v * e * e * e * e * e) - ValueType{5};
+        }
+        
+        template<typename ValueType>
+        constexpr auto log_lt(const ValueType v) -> ValueType
+        {
+            auto e = log_e<ValueType>;
+            return v < ValueType{1024} ? log_helper(v, ValueType{0}) : log_lt(v / (e * e * e * e * e)) + ValueType{5};
         }
     }
     
     template<typename ValueType>
-    constexpr auto cos(const implementation::radian<ValueType> v) -> ValueType
+    constexpr auto log(const ValueType x, const ValueType y) -> ValueType
     {
-        return implementation::cos_impl(static_cast<ValueType>(v));
+        return implementation::log_helper(x, y);
     }
     
     template<typename ValueType>
-    constexpr auto cos(const implementation::degree<ValueType>& v) -> ValueType
+    constexpr auto log(const ValueType v) -> ValueType
     {
-        return cos(implementation::radian<ValueType>{v});
-    }
-
-    template<typename ValueType>
-    constexpr auto acos(const implementation::radian<ValueType> v) -> ValueType
-    {
-        return implementation::acos_impl(static_cast<ValueType>(v));
-    }
-
-    template<typename ValueType>
-    constexpr auto acos(const implementation::degree<ValueType>& v) -> ValueType
-    {
-        return acos(implementation::radian<ValueType>{v});
-    }
-    
-    template<typename ValueType>
-    constexpr auto cosh(const ValueType v) -> ValueType
-    {
-        return (exp(v) + exp(-v)) / ValueType{2};
-    }
-    
-    template<typename ValueType>
-    constexpr auto acosh(const ValueType v) -> ValueType
-    {
-        return log(v, + sqrt(v * v - ValueType{1}));
+        return v >= ValueType{1024} ? implementation::log_lt(v) : implementation::log_gt(v);
     }
 }

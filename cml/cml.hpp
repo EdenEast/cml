@@ -40,6 +40,7 @@
 #include "functions/cross.hpp"
 #include "functions/distance.hpp"
 #include "functions/dot.hpp"
+#include "functions/exp.hpp"
 #include "functions/factorial.hpp"
 #include "functions/length.hpp"
 #include "functions/lerp.hpp"

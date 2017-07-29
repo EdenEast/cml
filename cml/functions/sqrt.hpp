@@ -21,6 +21,7 @@
 //
 
 #pragma once
+
 #include <cstddef>
 #include "../traits.hpp"
 #include "../equality.hpp"

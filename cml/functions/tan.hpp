@@ -101,4 +101,16 @@ namespace cml
     {
         return implementation::atan2_impl(x, y);
     }
+    
+    template<typename ValueType>
+    constexpr auto tanh(const ValueType v) -> ValueType
+    {
+        return sinh(v) / cosh(v);
+    }
+    
+    template<typename ValueType>
+    constexpr auto atanh(const ValueType v) -> ValueType
+    {
+        return ValueType{1}/ValueType{2} * log(ValueType{1} + v) / (ValueType{1} - v);
+    }
 }
