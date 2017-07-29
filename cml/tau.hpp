@@ -28,10 +28,13 @@
 namespace cml
 {
     template<typename ValueType>
-    struct pi
-    {
-        static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "pi must be a floating point or fixed point type");
-        static constexpr ValueType value = static_cast<ValueType>(3.141592653589793);
-        static constexpr ValueType half_value = static_cast<ValueType>(1.570796326794897);
-    };
+    constexpr ValueType tau = ValueType{6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429L};
+
+    // tau / 2
+    template<typename ValueType>
+    constexpr ValueType pi = ValueType{3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482L};
+
+    // tau / 4
+    template<typename ValueType>
+    constexpr ValueType half_pi = pi<ValueType> / ValueType{2};
 }

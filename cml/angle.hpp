@@ -29,15 +29,6 @@
 namespace cml::implementation
 {
     template<typename ValueType, angle_kind Kind>
-    constexpr auto angle_convert_value() -> ValueType
-    {
-        if constexpr(Kind == angle_kind::degree)
-            return static_cast<ValueType>(57.295779513082321);
-        else
-            return static_cast<ValueType>(0.0174532925199432958);
-    }
-
-    template<typename ValueType, angle_kind Kind>
     class angle
     {
         static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "ValueType must be a floating|fixed point.");
@@ -58,7 +49,7 @@ namespace cml::implementation
 
         template<angle_kind DiffKind>
         constexpr angle(angle<ValueType, DiffKind> other) noexcept
-        : value(static_cast<ValueType>(other) * angle_convert_value<ValueType, Kind>())
+        : value(static_cast<ValueType>(other) * angle_convert_factor<ValueType, DiffKind, Kind>::factor)
         {
         }
 
@@ -71,7 +62,7 @@ namespace cml::implementation
         template<angle_kind DiffKind>
         constexpr this_type& operator=(angle<ValueType, DiffKind> other) noexcept
         {
-            value = other.value * angle_convert_value<ValueType, Kind>();
+            value = other.value * angle_convert_factor<ValueType, DiffKind, Kind>::factor;
             return *this;
         }
 

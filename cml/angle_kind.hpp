@@ -22,11 +22,37 @@
 
 #pragma once
 
+#include "tau.hpp"
+
 namespace cml::implementation
 {
     enum class angle_kind
     {
         degree,
         radian
+    };
+
+    template<typename ValueType, angle_kind From, angle_kind To>
+    struct angle_convert_factor
+    {
+        static constexpr ValueType factor = ValueType(1);
+    };
+
+    template<typename ValueType, angle_kind A>
+    struct angle_convert_factor<ValueType, A, A>
+    {
+        static constexpr ValueType factor = ValueType(1);
+    };
+
+    template<typename ValueType>
+    struct angle_convert_factor<ValueType, angle_kind::degree, angle_kind::radian>
+    {
+        static constexpr ValueType factor = tau<ValueType> / ValueType(360);
+    };
+
+    template<typename ValueType>
+    struct angle_convert_factor<ValueType, angle_kind::radian, angle_kind::degree>
+    {
+        static constexpr ValueType factor = ValueType(360) / tau<ValueType>;
     };
 }

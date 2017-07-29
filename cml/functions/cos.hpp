@@ -37,42 +37,30 @@ namespace cml
         template<typename ValueType>
         constexpr auto acos_impl(const ValueType v) -> ValueType
         {
-            return v == ValueType{-1} ? pi<ValueType>::value :
+            return v == ValueType{-1} ? pi<ValueType> :
                    v == ValueType{1} ? 0 :
-                   pi<ValueType>::value / ValueType{2} -asin_impl(v);
+                   pi<ValueType> / ValueType{2} -asin_impl(v);
         }
     }
-    
-    template<typename ValueType>
-    constexpr auto cos(const implementation::radian<ValueType> v) -> ValueType
+
+    template<typename ValueType, implementation::angle_kind AK>
+    constexpr auto cos(const implementation::angle<ValueType, AK> v) -> ValueType
     {
-        return implementation::cos_impl(static_cast<ValueType>(v));
-    }
-    
-    template<typename ValueType>
-    constexpr auto cos(const implementation::degree<ValueType>& v) -> ValueType
-    {
-        return cos(implementation::radian<ValueType>{v});
+        return implementation::cos_impl(static_cast<ValueType>(implementation::radian<ValueType>{v}));
     }
 
-    template<typename ValueType>
-    constexpr auto acos(const implementation::radian<ValueType> v) -> ValueType
+    template<typename ValueType, implementation::angle_kind AK>
+    constexpr auto acos(const implementation::angle<ValueType, AK> v) -> ValueType
     {
-        return implementation::acos_impl(static_cast<ValueType>(v));
+        return implementation::acos_impl(static_cast<ValueType>(implementation::radian<ValueType>{v}));
     }
 
-    template<typename ValueType>
-    constexpr auto acos(const implementation::degree<ValueType>& v) -> ValueType
-    {
-        return acos(implementation::radian<ValueType>{v});
-    }
-    
     template<typename ValueType>
     constexpr auto cosh(const ValueType v) -> ValueType
     {
         return (exp(v) + exp(-v)) / ValueType{2};
     }
-    
+
     template<typename ValueType>
     constexpr auto acosh(const ValueType v) -> ValueType
     {

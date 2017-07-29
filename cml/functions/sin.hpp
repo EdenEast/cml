@@ -54,42 +54,30 @@ namespace cml
         template<typename ValueType>
         constexpr auto asin_impl(const ValueType x) -> ValueType
         {
-            return x == ValueType{-1} ? pi<ValueType>::value / ValueType{-2} :
-                   x == ValueType{1} ? pi<ValueType>::value / ValueType{2} :
+            return x == ValueType{-1} ? pi<ValueType> / ValueType{-2} :
+                   x == ValueType{1} ? pi<ValueType> / ValueType{2} :
                    asin_series(x, x, 1, x*x*x / ValueType{2});
         }
     }
-    
-    template<typename ValueType>
-    constexpr auto sin(const implementation::radian<ValueType> v) -> ValueType
+
+    template<typename ValueType, implementation::angle_kind AK>
+    constexpr auto sin(const implementation::angle<ValueType, AK> v) -> ValueType
     {
-        return implementation::sin_impl(static_cast<ValueType>(v));
-    }
-    
-    template<typename ValueType>
-    constexpr auto sin(const implementation::degree<ValueType>& v) -> ValueType
-    {
-        return sin(implementation::radian<ValueType>{v});
+        return implementation::sin_impl(static_cast<ValueType>(implementation::radian<ValueType>{v}));
     }
 
-    template<typename ValueType>
-    constexpr auto asin(const implementation::radian<ValueType>& v)->ValueType
+    template<typename ValueType, implementation::angle_kind AK>
+    constexpr auto asin(const implementation::angle<ValueType, AK> v)->ValueType
     {
-        return implementation::asin_impl(static_cast<ValueType>(v));
+        return implementation::asin_impl(static_cast<ValueType>(implementation::radian<ValueType>{v}));
     }
-    
-    template<typename ValueType>
-    constexpr auto asin(const implementation::degree<ValueType>& v)->ValueType
-    {
-        return asin(implementation::radian<ValueType>{v});
-    }
-    
+
     template<typename ValueType>
     constexpr auto sinh(const ValueType v) -> ValueType
     {
         return (exp(v) - exp(-v)) / ValueType{2};
     }
-    
+
     template<typename ValueType>
     constexpr auto asinh(const ValueType v) -> ValueType
     {
@@ -98,18 +86,20 @@ namespace cml
 }
 
 #ifdef CML_COMPILE_TEST_CASE
+/*
+static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(cml::tau<float>))), "sin(TAUf)");
+static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(cml::tau<double>))), "sin(TAU)");
+static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(cml::tau<long double>))), "sin(TAUl)");
 
-// pi = 3.141592653589793238463
-static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(3.1415927f))), "sin(PIf)");
-static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(3.141592653589793))), "sin(PI)");
-static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(3.1415926535897932385l))), "sin(PIl)");
+static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(cml::pi<float>))), "sin(PIf)");
+static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(cml::pi<double>))), "sin(PI)");
+static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(cml::pi<long double>))), "sin(PIl)");
 
-// pi/2 = 1.570796326794896619231
-static_assert(cml::is_equal(1.0f, cml::sin(cml::rad(1.57079633f))), "sin(PI/2f)");
-static_assert(cml::is_equal(1.0,  cml::sin(cml::rad(1.5707963267948966))), "sin(PI/2)");
-static_assert(cml::is_equal(1.0l, cml::sin(cml::rad(1.5707963267948966192l))), "sin(PI/2l)");
+static_assert(cml::is_equal(1.0f, cml::sin(cml::rad(cml::half_pi<float>))), "sin(PI/2f)");
+static_assert(cml::is_equal(1.0,  cml::sin(cml::rad(cml::half_pi<double>))), "sin(PI/2)");
+static_assert(cml::is_equal(1.0l, cml::sin(cml::rad(cml::half_pi<long double>))), "sin(PI/2l)");
 
 // sin(1) = 0.8414709848078965066525
 static_assert(cml::is_equal(0.8414709848078965, cml::sin(cml::rad(1.0))), "sin(1.0)");
-
+*/
 #endif

@@ -30,7 +30,7 @@
 #include "angle.hpp"
 #include "definitions.hpp"
 #include "equality.hpp"
-#include "pi.hpp"
+#include "tau.hpp"
 #include "traits.hpp"
 
 // functions

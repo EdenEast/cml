@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../pi.hpp"
+#include "../tau.hpp"
 #include "sin.hpp"
 #include "cos.hpp"
 
@@ -65,49 +65,37 @@ namespace cml
         constexpr auto atan2_impl(ValueType x, ValueType y) -> ValueType
         {
             return x > 0 ? atan_impl(y / x) :
-                y >= 0 && x < 0 ? atan_impl(y / x) + pi<ValueType>::value :
-                y < 0 && x < 0 ? atan_impl(y / x) - pi<ValueType>::value :
-                y > 0 && x == 0 ? pi<ValueType>::value / ValueType{ 2.0l } :
-                -pi<ValueType>::value / ValueType{ 2.0l };
+                y >= 0 && x < 0 ? atan_impl(y / x) + pi<ValueType> :
+                y < 0 && x < 0 ? atan_impl(y / x) - pi<ValueType> :
+                y > 0 && x == 0 ? pi<ValueType> / ValueType{ 2.0l } :
+                -pi<ValueType> / ValueType{ 2.0l };
         }
     }
-    
-    template<typename ValueType>
-    constexpr auto tan(const implementation::radian<ValueType> v) -> ValueType
+
+    template<typename ValueType, implementation::angle_kind AK>
+    constexpr auto tan(const implementation::angle<ValueType, AK> v) -> ValueType
     {
         return sin(v) / cos(v);
     }
-    
-    template<typename ValueType>
-    constexpr auto tan(const implementation::degree<ValueType>& v) -> ValueType
+
+    template<typename ValueType, implementation::angle_kind AK>
+    constexpr auto atan(const implementation::angle<ValueType, AK> v) -> ValueType
     {
-        return tan(implementation::radian<ValueType>{v});
+        return implementation::atan_impl(static_cast<ValueType>(implementation::radian<ValueType>{v}));
     }
-    
-    template<typename ValueType>
-    constexpr auto atan(const implementation::radian<ValueType> v) -> ValueType
-    {
-        return implementation::atan_impl(static_cast<ValueType>(v));
-    }
-    
-    template<typename ValueType>
-    constexpr auto atan(const implementation::degree<ValueType> v) -> ValueType
-    {
-        return atan(implementation::radian<ValueType>{v});
-    }
-    
+
     template<typename ValueType>
     constexpr auto atan2(const ValueType x, const ValueType y) -> ValueType
     {
         return implementation::atan2_impl(x, y);
     }
-    
+
     template<typename ValueType>
     constexpr auto tanh(const ValueType v) -> ValueType
     {
         return sinh(v) / cosh(v);
     }
-    
+
     template<typename ValueType>
     constexpr auto atanh(const ValueType v) -> ValueType
     {
