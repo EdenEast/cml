@@ -21,9 +21,7 @@
 //
 
 #pragma once
-#include "../matrix.hpp"
 #include "../traits.hpp"
-#include "../operators.hpp"
 #include "max.hpp"
 
 namespace cml
@@ -51,6 +49,7 @@ namespace cml
 #ifdef CML_COMPILE_TEST_CASE
 
 #include "../definitions.hpp"
+#include "../operators.hpp"
 
 static_assert(cml::cross(cml::vec3(3, -3, 1), cml::vec3(4, 9, 2)) == cml::vec3(-15, -2, 39));
 static_assert(cml::cross(cml::dvec3(3, -3, 1), cml::dvec3(-12, 12, -4)) == cml::dvec3());
