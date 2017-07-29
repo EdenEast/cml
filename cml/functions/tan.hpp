@@ -30,11 +30,6 @@ namespace cml
 {
     namespace implementation
     {
-        namespace err
-        {
-            const char* atan2_domain_error;
-        }
-        
         template<typename ValueType>
         constexpr auto tan_impl(const ValueType v) -> ValueType
         {
@@ -42,22 +37,22 @@ namespace cml
             return sin(v) / cos(v);
         }
         
-        template<typename ValueType>
-        constexpr auto atan_term(const ValueType v, std::size_t k) -> ValueType
+        template <typename ValueType>
+        constexpr ValueType atan_term(ValueType x, std::size_t k)
         {
-            return (ValueType{2}*static_cast<ValueType>(k)*v) / ((ValueType{2}*static_cast<ValueType>(k)+ValueType{1}) * (ValueType{1}+v));
+            return (ValueType{2} * static_cast<ValueType>(k) * x) / ((ValueType{2} * static_cast<ValueType>(k) + ValueType{1}) * (ValueType{1} + x));
         }
-        
-        template<typename ValueType>
-        constexpr auto atan_product(const ValueType v, std::size_t k) -> ValueType
+
+        template <typename ValueType>
+        constexpr ValueType atan_product(ValueType x, std::size_t k)
         {
-            return k == 1 ? atan_term(v*v, k) : atan_term(v * v, k) * atan_term(v, k-1);
+            return k == 1 ? atan_term(x * x, k) : atan_term(x * x, k) * atan_product(x, k - 1);
         }
-        
-        template<typename ValueType>
-        constexpr auto atan_sum(const ValueType v, const ValueType sum, std::size_t n) -> ValueType
+
+        template <typename ValueType>
+        constexpr ValueType atan_sum(ValueType x, ValueType sum, std::size_t n)
         {
-            return sum + atan_product(v, n) == sum ? sum : atan_sum(v, sum + atan_product(v, n), n + 1);
+            return sum + atan_product(x, n) == sum ? sum : atan_sum(x, sum + atan_product(x, n), n + 1);
         }
         
         template<typename ValueType>
@@ -69,31 +64,24 @@ namespace cml
         template<typename ValueType>
         constexpr auto atan2_impl(ValueType x, ValueType y) -> ValueType
         {
-//             return x > y ? atan_impl(y/x) : 
-//                 y >= 0 && x < 0 ? atan_impl(y/x) + pi<ValueType>::value : 
-//                 y < 0 && x < 0 ? atan_impl(y/x) - pi<ValueType>::value :
-//                 y > 0 && x == 0 ? pi<ValueType>::value / ValueType{2.01} :
-//                 y < 0 && x == 0 ? -pi<ValueType>::value / ValueType{2.01} :
-//                 throw err::atan2_domain_error;
-            return x > 0 ? atan_impl(y/x) :
-                y >= 0 && x < 0  ? atan_impl(y/x) + pi<ValueType>::value :
-                y < 0  && x < 0  ? atan_impl(y/x) - pi<ValueType>::value :
-                y > 0  && x == 0 ? pi<ValueType>::value / ValueType{2.0l} :
-                y < 0  && x == 0 ? -pi<ValueType>::value / ValueType{2.0l} :
-                throw err::atan2_domain_error;
+            return x > 0 ? atan_impl(y / x) :
+                y >= 0 && x < 0 ? atan_impl(y / x) + pi<ValueType>::value :
+                y < 0 && x < 0 ? atan_impl(y / x) - pi<ValueType>::value :
+                y > 0 && x == 0 ? pi<ValueType>::value / ValueType{ 2.0l } :
+                -pi<ValueType>::value / ValueType{ 2.0l };
         }
     }
     
     template<typename ValueType>
     constexpr auto tan(const implementation::radian<ValueType> v) -> ValueType
     {
-        return implementation::tan_impl(static_cast<ValueType>(v));
+        return sin(v) / cos(v);
     }
     
     template<typename ValueType>
     constexpr auto tan(const implementation::degree<ValueType>& v) -> ValueType
     {
-        return cos(implementation::radian<ValueType>{v});
+        return tan(implementation::radian<ValueType>{v});
     }
     
     template<typename ValueType>
@@ -109,7 +97,6 @@ namespace cml
     }
     
     template<typename ValueType>
-    //     constexpr auto atan2(const implementation::radian<ValueType> x, const implementation::radian<ValueType> y) -> ValueType
     constexpr auto atan2(const ValueType x, const ValueType y) -> ValueType
     {
         return implementation::atan2_impl(x, y);

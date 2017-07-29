@@ -126,19 +126,20 @@ int main()
 
     CHECK(cml::is_equal(cml::sqrt(5.0), std::sqrt(5.0)));
     CHECK(cml::sqrt(5.0f) == std::sqrt(5.0f));
-    
+
     CHECK(std::sqrt(5.0) == cml::sqrt(5.0));
     CHECK(std::sqrt(5.f) == cml::sqrt(5.f));
-    
+
     CHECK(cml::sin(cml::ddeg(45.0)) == std::sin(static_cast<double>(cml::drad(cml::ddeg(45.0)))));
     CHECK(cml::is_close(cml::cos(cml::ddeg(45.0)), std::cos(static_cast<double>(cml::drad(cml::ddeg(45.0))))));
-    
-    auto angle = static_cast<double>(cml::drad(cml::ddeg(45.0)));
-//     printf("%f, %f\n", cml::atan2(1.0, 1.0), std::atan2(1, 1));
-    
-    printf("%lf, %lf\n", cml::sin(cml::ddeg(45.0)), std::sin(static_cast<double>(cml::drad(cml::ddeg(45.0)))));
-//     printf("%lf, %lf\n", cml::cos(45.0), std::cos(45.0));
 
+    auto angle = static_cast<double>(cml::drad(cml::ddeg(45.0)));
+    printf("%f, %f\n", cml::atan2(1.0, 1.0), std::atan2(1, 1));
+
+    CHECK(cml::cos(cml::ddeg(45.0)) == std::cos(static_cast<double>(cml::drad(cml::ddeg(45.0)))));
+    printf("%lf, %lf\n", cml::sin(cml::ddeg(45.0)), std::sin(static_cast<double>(cml::drad(cml::ddeg(45.0)))));
+
+    system("pause");
     // should return 175
-    return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;    
+    return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;
 }

@@ -32,7 +32,7 @@
 #include "reference.hpp"
 
 #ifdef _MSC_VER
-#pragma warning( push )  
+#pragma warning( push )
 #pragma warning(disable:4309)
 #endif
 
@@ -253,6 +253,6 @@ namespace cml::implementation
     };
 
 #ifdef _MSC_VER
-#pragma warning( pop )  
+#pragma warning( pop )
 #endif
 } // namespace cml::implementation

@@ -33,6 +33,14 @@ namespace cml
         {
             return trig_series(v, ValueType{1}, ValueType{2}, ValueType{3}, ValueType{-1}, v*v);
         }
+        
+        template<typename ValueType>
+        constexpr auto acos_impl(const ValueType v) -> ValueType
+        {
+            return v == ValueType{-1} ? pi<ValueType>::value :
+                   v == ValueType{1} ? 0 :
+                   pi<ValueType>::value / ValueType{2} -asin_impl(v);
+        }
     }
     
     template<typename ValueType>
@@ -45,5 +53,17 @@ namespace cml
     constexpr auto cos(const implementation::degree<ValueType>& v) -> ValueType
     {
         return cos(implementation::radian<ValueType>{v});
+    }
+
+    template<typename ValueType>
+    constexpr auto acos(const implementation::radian<ValueType> v) -> ValueType
+    {
+        return implementation::acos_impl(static_cast<ValueType>(v));
+    }
+
+    template<typename ValueType>
+    constexpr auto acos(const implementation::degree<ValueType>& v) -> ValueType
+    {
+        return acos(implementation::radian<ValueType>{v});
     }
 }

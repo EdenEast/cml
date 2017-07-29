@@ -31,7 +31,7 @@ namespace cml
     struct pi
     {
         static_assert(std::is_floating_point<ValueType>::value || is_fixed_point<ValueType>::value, "pi must be a floating point or fixed point type");
-        static constexpr ValueType value = ValueType{3.141592653589793};
-        static constexpr ValueType half_value = ValueType{1.570796326794897};
+        static constexpr ValueType value = static_cast<ValueType>(3.141592653589793);
+        static constexpr ValueType half_value = static_cast<ValueType>(1.570796326794897);
     };
 }

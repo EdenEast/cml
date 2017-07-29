@@ -33,14 +33,14 @@ namespace cml
     {
         return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * max(abs(a), abs(b));
     }
-    
+
     template<int ulp = 1, typename ValueType>
     constexpr bool is_equal(const ValueType v1, const ValueType v2)
     {
         return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
             || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
     }
-    
+
     template<typename ValueType>
     constexpr bool feq(const ValueType& x, const ValueType& y)
     {

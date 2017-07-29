@@ -40,6 +40,21 @@ namespace cml
         {
             return trig_series(v, v, ValueType{6}, ValueType{4}, ValueType{-1}, v*v*v);
         }
+
+        template<typename ValueType>
+        constexpr auto asin_series(const ValueType x, const ValueType sum, std::size_t n, ValueType t) -> ValueType
+        {
+            return feq(sum, sum + t * static_cast<ValueType>(n) / (n + ValueType{2})) ? sum : asin_series(x, sum + t * static_cast<ValueType>(n) / (n + ValueType{2}), n + ValueType{2},
+                t*x*x*static_cast<ValueType>(n) / (n + ValueType{3}));
+        }
+
+        template<typename ValueType>
+        constexpr auto asin_impl(const ValueType x) -> ValueType
+        {
+            return x == ValueType{-1} ? pi<ValueType>::value / ValueType{-2} :
+                   x == ValueType{1} ? pi<ValueType>::value / ValueType{2} :
+                   asin_series(x, x, 1, x*x*x / ValueType{2});
+        }
     }
     
     template<typename ValueType>
@@ -52,5 +67,17 @@ namespace cml
     constexpr auto sin(const implementation::degree<ValueType>& v) -> ValueType
     {
         return sin(implementation::radian<ValueType>{v});
+    }
+
+    template<typename ValueType>
+    constexpr auto asin(const implementation::radian<ValueType>& v)->ValueType
+    {
+        return implementation::asin_impl(static_cast<ValueType>(v));
+    }
+    
+    template<typename ValueType>
+    constexpr auto asin(const implementation::degree<ValueType>& v)->ValueType
+    {
+        return asin(implementation::radian<ValueType>{v});
     }
 }
