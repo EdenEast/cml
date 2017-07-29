@@ -24,6 +24,7 @@
 
 #include "matrix_kind.hpp"
 #include "definitions.hpp"
+#include "reference.hpp"
 #include <type_traits>
 #include <limits>
 
@@ -63,4 +64,19 @@ namespace cml
         static constexpr implementation::matrix_kind kind = Kind;
         using type = ValueType;
     };
+
+    template<typename T>
+    struct remove_matrix_reference
+    {
+        using type = T;
+    };
+
+    template<size_t DimY, size_t DimX, typename ValueType, implementation::matrix_kind Kind>
+    struct remove_matrix_reference<implementation::matrix<DimX, DimY, ValueType, Kind>>
+    {
+        using type = implementation::matrix<DimX, DimY, typename implementation::remove_reference<ValueType>::type, Kind>;
+    };
+
+    template<typename T>
+    using remove_matrix_reference_t = typename remove_matrix_reference<T>::type;
 }

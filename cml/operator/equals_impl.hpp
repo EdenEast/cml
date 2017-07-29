@@ -22,28 +22,41 @@
 
 #pragma once
 
-#include <type_traits>
-
-#include "not_equals_impl.hpp"
-#include "../matrix.hpp"
-#include "../fixed_point.hpp"
-
 namespace cml::implementation
 {
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, typename SType>
-    constexpr bool operator != (const matrix<DimX, DimY, VType, Kind>& v1, SType&& v2)
+    template<typename MType, size_t... Idxs>
+    static constexpr bool matrix_mm_eq(std::index_sequence<Idxs...>, const MType& v1, const MType& v2)
     {
-        if constexpr(std::is_arithmetic<SType>::value || is_fixed_point<SType>::value || is_reference<SType>::value || std::is_same<SType, VType>::value)
-            return matrix_ms_neq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
-        else if constexpr (std::is_same<matrix<DimX, DimY, VType, Kind>, SType>::value)
-            return matrix_mm_neq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
-        else
-            return false;
+#ifndef _MSC_VER
+        return ((v1.components[Idxs] == v2.components[Idxs]) && ...);
+#else
+        bool ret = true;
+        (void)(ar_t{((ret = ret && v1.components[Idxs] == v2.components[Idxs]), 0)...});
+        return ret;
+#endif
     }
 
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind>
-    constexpr bool operator != (VType v1, const matrix<DimX, DimY, VType, Kind>& v2)
+    template<typename MType, typename SType, size_t... Idxs>
+    static constexpr bool matrix_ms_eq(std::index_sequence<Idxs...>, const MType& v1, SType v2)
     {
-        return matrix_sm_neq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
+#ifndef _MSC_VER
+        return ((v1.components[Idxs] == v2) && ...);
+#else
+        bool ret = true;
+        (void)(ar_t{((ret = ret && v1.components[Idxs] == v2), 0)...});
+        return ret;
+#endif
+    }
+
+    template<typename MType, typename SType, size_t... Idxs>
+    static constexpr bool matrix_sm_eq(std::index_sequence<Idxs...>, SType&& v1, const MType& v2)
+    {
+#ifndef _MSC_VER
+        return ((v1 == v2.components[Idxs]) && ...);
+#else
+        bool ret = true;
+        (void)(ar_t{((ret = ret && v1 == v2.components[Idxs]), 0)...});
+        return ret;
+#endif
     }
 }

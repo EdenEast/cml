@@ -22,24 +22,14 @@
 
 #pragma once
 
+#include <type_traits>
+
+#include "subtract_impl.hpp"
 #include "../matrix.hpp"
 #include "../traits.hpp"
-#include <type_traits>
 
 namespace cml::implementation
 {
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs>
-    static constexpr matrix<DimX, DimY, typename remove_reference<VType>::type, Kind> matrix_mm_sub(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType, Kind>& v1, const matrix<DimX, DimY, VType, Kind>& v2)
-    {
-        return {v1.components[Idxs] - v2.components[Idxs]...};
-    }
-
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs, typename SType>
-    static constexpr matrix<DimX, DimY, typename remove_reference<VType>::type, Kind> matrix_ms_sub(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType, Kind>& v1, SType v2)
-    {
-        return {v1.components[Idxs] - v2...};
-    }
-
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, typename SType>
     constexpr auto operator - (const matrix<DimX, DimY, VType, Kind>& v1, SType&& v2) -> auto
     {
@@ -49,40 +39,10 @@ namespace cml::implementation
             return matrix_mm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
     }
 
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs>
-    static constexpr matrix<DimX, DimY, typename remove_reference<VType>::type, Kind> matrix_sm_sub(std::index_sequence<Idxs...>, VType v1, const matrix<DimX, DimY, VType, Kind>& v2)
-    {
-        return {v1 - v2.components[Idxs]...};
-    }
-
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind>
     constexpr auto operator - (VType v1, const matrix<DimX, DimY, VType, Kind>& v2) -> auto
     {
         return matrix_sm_sub(std::make_index_sequence<DimX * DimY>{}, v1, v2);
-    }
-
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs>
-    static constexpr matrix<DimX, DimY, VType, Kind>& matrix_smm_sub(std::index_sequence<Idxs...>, matrix<DimX, DimY, VType, Kind>& v1, const matrix<DimX, DimY, VType, Kind>& v2)
-    {
-#ifndef _MSC_VER
-        ((v1.components[Idxs] -= v2.components[Idxs]), ...);
-#else
-        using ar_t = int[];
-        (void)(ar_t{(v1.components[Idxs] -= v2.components[Idxs])...});
-#endif
-        return v1;
-    }
-
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs, typename SType>
-    static constexpr matrix<DimX, DimY, VType, Kind>& matrix_sms_sub(std::index_sequence<Idxs...>, matrix<DimX, DimY, VType, Kind>& v1, SType v2)
-    {
-#ifndef _MSC_VER
-        ((v1.components[Idxs] -= v2), ...);
-#else
-        using ar_t = int[];
-        (void)(ar_t{((v1.components[Idxs] -= v2), 0)...});
-#endif
-        return v1;
     }
 
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, typename SType>

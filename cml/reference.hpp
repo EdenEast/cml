@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <memory>
+
 namespace cml::implementation
 {
     template<typename ValueType>
@@ -60,12 +62,16 @@ namespace cml::implementation
 
         constexpr ValueType operator + (const reference& o) const noexcept { return *ptr + *o.ptr; }
         constexpr ValueType operator + (const ValueType& o) const noexcept { return *ptr + o; }
+        constexpr ValueType operator + (ValueType&& o) const noexcept { return *ptr + std::forward<ValueType>(o); }
         constexpr ValueType operator - (const reference& o) const noexcept { return *ptr - *o.ptr; }
         constexpr ValueType operator - (const ValueType& o) const noexcept { return *ptr - o; }
+        constexpr ValueType operator - (ValueType&& o) const noexcept { return *ptr - std::forward<ValueType>(o); }
         constexpr ValueType operator * (const reference& o) const noexcept { return *ptr * *o.ptr; }
         constexpr ValueType operator * (const ValueType& o) const noexcept { return *ptr * o; }
+        constexpr ValueType operator * (ValueType&& o) const noexcept { return *ptr * std::forward<ValueType>(o); }
         constexpr ValueType operator / (const reference& o) const noexcept { return *ptr / *o.ptr; }
         constexpr ValueType operator / (const ValueType& o) const noexcept { return *ptr / o; }
+        constexpr ValueType operator / (ValueType&& o) const noexcept { return *ptr / std::forward<ValueType>(o); }
     };
 
     // traits

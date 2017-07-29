@@ -23,7 +23,7 @@
 #pragma once
 #include "../matrix.hpp"
 #include "../traits.hpp"
-#include "../matrix_operators.hpp"
+#include "../operators.hpp"
 #include "max.hpp"
 
 namespace cml

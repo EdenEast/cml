@@ -22,36 +22,14 @@
 
 #pragma once
 
+#include <type_traits>
+
+#include "equals_impl.hpp"
 #include "../matrix.hpp"
 #include "../traits.hpp"
-#include <type_traits>
 
 namespace cml::implementation
 {
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs>
-    static constexpr bool matrix_mm_eq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType, Kind>& v1, const matrix<DimX, DimY, VType, Kind>& v2)
-    {
-#ifndef _MSC_VER
-        return ((v1.components[Idxs] == v2.components[Idxs]) && ...);
-#else
-        bool ret = true;
-        (void)(ar_t{((ret = ret && v1.components[Idxs] == v2.components[Idxs]), 0)...});
-        return ret;
-#endif
-    }
-
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs, typename SType>
-    static constexpr bool matrix_ms_eq(std::index_sequence<Idxs...>, const matrix<DimX, DimY, VType, Kind>& v1, SType v2)
-    {
-#ifndef _MSC_VER
-        return ((v1.components[Idxs] == v2) && ...);
-#else
-        bool ret = true;
-        (void)(ar_t{((ret = ret && v1.components[Idxs] == v2), 0)...});
-        return ret;
-#endif
-    }
-
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, typename SType>
     constexpr bool operator == (const matrix<DimX, DimY, VType, Kind>& v1, SType&& v2)
     {
@@ -63,20 +41,8 @@ namespace cml::implementation
             return false;
     }
 
-    template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, size_t... Idxs>
-    static constexpr bool matrix_sm_eq(std::index_sequence<Idxs...>, VType v1, const matrix<DimX, DimY, VType, Kind>& v2)
-    {
-#ifndef _MSC_VER
-        return ((v1 == v2.components[Idxs]) && ...);
-#else
-        bool ret = true;
-        (void)(ar_t{((ret = ret && v1 == v2.components[Idxs]), 0)...});
-        return ret;
-#endif
-    }
-
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind>
-    constexpr bool operator == (VType v1, const matrix<DimX, DimY, VType, Kind>& v2)
+    constexpr bool operator == (VType&& v1, const matrix<DimX, DimY, VType, Kind>& v2)
     {
         return matrix_sm_eq(std::make_index_sequence<DimX * DimY>{}, v1, v2);
     }
