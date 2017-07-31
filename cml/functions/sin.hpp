@@ -86,20 +86,22 @@ namespace cml
 }
 
 #ifdef CML_COMPILE_TEST_CASE
-/*
-static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(cml::tau<float>))), "sin(TAUf)");
-static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(cml::tau<double>))), "sin(TAU)");
-static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(cml::tau<long double>))), "sin(TAUl)");
 
-static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(cml::pi<float>))), "sin(PIf)");
-static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(cml::pi<double>))), "sin(PI)");
-static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(cml::pi<long double>))), "sin(PIl)");
+#include "../definitions.hpp"
 
-static_assert(cml::is_equal(1.0f, cml::sin(cml::rad(cml::half_pi<float>))), "sin(PI/2f)");
-static_assert(cml::is_equal(1.0,  cml::sin(cml::rad(cml::half_pi<double>))), "sin(PI/2)");
-static_assert(cml::is_equal(1.0l, cml::sin(cml::rad(cml::half_pi<long double>))), "sin(PI/2l)");
+// static_assert(cml::is_equal<16>(0.0f, cml::sin(cml::radian<float>(cml::pi<float>))), "sin(TAUf)");
+// static_assert(cml::feq(0.0,  cml::sin(cml::radian<double>(cml::pi<double>))), "sin(TAU)");
+// static_assert(cml::feq(0.0l, cml::sin(cml::radian<long double>(cml::pi<long double>))), "sin(TAUl)");
+// 
+// static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(cml::pi<float>))), "sin(PIf)");
+// static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(cml::pi<double>))), "sin(PI)");
+// static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(cml::pi<long double>))), "sin(PIl)");
+// 
+// static_assert(cml::is_equal(1.0f, cml::sin(cml::rad(cml::half_pi<float>))), "sin(PI/2f)");
+// static_assert(cml::is_equal(1.0,  cml::sin(cml::rad(cml::half_pi<double>))), "sin(PI/2)");
+// static_assert(cml::is_equal(1.0l, cml::sin(cml::rad(cml::half_pi<long double>))), "sin(PI/2l)");
 
 // sin(1) = 0.8414709848078965066525
-static_assert(cml::is_equal(0.8414709848078965, cml::sin(cml::rad(1.0))), "sin(1.0)");
-*/
+// static_assert(cml::is_equal(0.8414709848078965, cml::sin(cml::rad(1.0))), "sin(1.0)");
+
 #endif

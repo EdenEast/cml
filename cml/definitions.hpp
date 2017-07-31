@@ -182,10 +182,15 @@ namespace cml
     using uf0032scalar = scalar<uf0032>;
 
     // Angle
+    template<typename ValueType> using degree = implementation::angle<ValueType, implementation::angle_kind::degree>;
+    template<typename ValueType> using radian = implementation::angle<ValueType, implementation::angle_kind::radian>;
+    
     using deg = implementation::degree<float>;
     using rad = implementation::radian<float>;
     using ddeg = implementation::degree<double>;
     using drad = implementation::radian<double>;
+    using lddeg = implementation::degree<long double>;
+    using ldrad = implementation::radian<long double>;
 
     using f88deg = implementation::degree<f88>;
     using f88rad = implementation::radian<f88>;

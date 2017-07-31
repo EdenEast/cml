@@ -2,6 +2,8 @@
 #define CML_COMPILE_TEST_CASE 1
 #include <cml/cml.hpp>
 #include <math.h>
+#include <iostream>
+#include <iomanip>
 
 #define STRING(STR) #STR
 #define CHECK(expr) if (!(expr)) {printf("Check failed: %s\n", STRING(expr));}
@@ -9,6 +11,27 @@
 #define STD_COMPARE(RAD, CML, STD) \
     CHECK(cml::is_equal(CML(RAD), STD(static_cast<double>(RAD))))
 
+template<typename T>
+void print_impl(std::ostream& os, T t)
+{
+    os << t << '\n';
+}
+
+template<typename T, typename U, typename... A>
+void print_impl(std::ostream& os, T t, U u, A... a)
+{
+    os << t << ',' << ' ';
+    print_impl(os, u, a...);
+}
+
+template<typename Precision, typename T, typename... A>
+void print(T t, A... a)
+{
+    std::ostream& os = std::cout;
+    os << std::setprecision(std::numeric_limits<Precision>::digits10) << std::fixed;
+    print_impl(os, t, a...);
+    
+}
 
 int main()
 {
@@ -152,6 +175,11 @@ int main()
     STD_COMPARE(other_value, cml::acosh, std::acosh);
     STD_COMPARE(other_value, cml::atanh, std::atanh);
     
+    print<long double>(0.0, cml::sin(cml::radian<long double>(cml::pi<long double>)));
+    static_assert(cml::is_equal(0.0, cml::sin(cml::radian<double>(cml::pi<double>))));
+    
+//     std::cout << std::setprecision(std::numeric_limits<double>::digits10) << std::fixed <<
+//         0.0f << " | " << cml::sin(cml::radian<double>(cml::pi<double>)) << '\n';
     
     CHECK(cml::is_equal(cml::atan2(1.0, 1.0), std::atan2(1.0, 1.0)));
 
