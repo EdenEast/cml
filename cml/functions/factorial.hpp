@@ -25,15 +25,16 @@
 namespace cml
 {
     template<typename ValueType>
-    constexpr auto factorial(const ValueType& n) -> ValueType
+    constexpr auto factorial(ValueType n) -> ValueType
     {
-        return n > 0 ? n * factorial(n - ValueType{1}) : ValueType{1};
+        auto ret = ValueType{1};
+        for (;n > 0; --n)
+            ret *= n;
+        return ret;
     }
 }
 
 #ifdef CML_COMPILE_TEST_CASE
-
-#include "../equality.hpp"
 
 static_assert(cml::factorial(5) == 120);
 static_assert(cml::factorial(5.0) == 120.0);

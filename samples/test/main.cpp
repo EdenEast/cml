@@ -173,8 +173,6 @@ int main()
     STD_COMPARE(cml::pi<double>, cml::asinh, std::asinh);
     STD_COMPARE(cml::pi<double>, cml::acosh, std::acosh);
     STD_COMPARE(cml::half_pi<double> / 2.0, cml::atanh, std::atanh);
-
-    std::cout << (cml::factorial(5) == 120) << '\n';
         
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;

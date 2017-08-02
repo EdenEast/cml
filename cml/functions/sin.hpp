@@ -45,7 +45,7 @@ namespace cml
         }
 
         template<typename ValueType>
-        constexpr auto asin_series(const ValueType x, const ValueType sum, std::size_t n, ValueType t) -> ValueType
+        constexpr auto asin_series(const ValueType x, const ValueType sum, int n, ValueType t) -> ValueType
         {
             return is_equal(sum, sum + t * static_cast<ValueType>(n) / (n + ValueType{2})) ? sum : asin_series(x, sum + t * static_cast<ValueType>(n) / (n + ValueType{2}), n + ValueType{2},
                 t*x*x*static_cast<ValueType>(n) / (n + ValueType{3}));
