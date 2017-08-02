@@ -33,7 +33,7 @@ namespace cml
         template<typename ValueType>
         constexpr auto sqrt_helper(const ValueType& a, const ValueType& b) -> ValueType
         {
-            return is_close(a, b * b) ? b : sqrt_helper(a, (b + a / b) / ValueType{2});
+            return is_equal(a, b * b) ? b : sqrt_helper(a, (b + a / b) / ValueType{2});
         }
     }
 

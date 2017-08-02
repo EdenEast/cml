@@ -35,7 +35,7 @@ namespace cml
 
 #include "../equality.hpp"
 
-//static_assert(cml::factorial(5) == 120);
-//static_assert(cml::factorial(5.0) == 120.0);
+static_assert(cml::factorial(5) == 120);
+static_assert(cml::factorial(5.0) == 120.0);
 
 #endif

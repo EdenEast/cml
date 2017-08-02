@@ -35,9 +35,9 @@ namespace cml
         template<typename ValueType>
         constexpr auto trig_series(const ValueType x, const ValueType sum, const ValueType n, const ValueType i, const ValueType s, const ValueType t) -> ValueType
         {
-            return feq(sum, sum + t*s/n) ? sum : trig_series(x, sum + t*s/n, n*i*(i+1), i+2, -s, t*x*x);
+            return is_equal(sum, sum + t*s/n) ? sum : trig_series(x, sum + t*s/n, n*i*(i+1), i+2, -s, t*x*x);
         }
-        
+
         template<typename ValueType>
         constexpr auto sin_impl(const ValueType v) -> ValueType
         {
@@ -47,7 +47,7 @@ namespace cml
         template<typename ValueType>
         constexpr auto asin_series(const ValueType x, const ValueType sum, std::size_t n, ValueType t) -> ValueType
         {
-            return feq(sum, sum + t * static_cast<ValueType>(n) / (n + ValueType{2})) ? sum : asin_series(x, sum + t * static_cast<ValueType>(n) / (n + ValueType{2}), n + ValueType{2},
+            return is_equal(sum, sum + t * static_cast<ValueType>(n) / (n + ValueType{2})) ? sum : asin_series(x, sum + t * static_cast<ValueType>(n) / (n + ValueType{2}), n + ValueType{2},
                 t*x*x*static_cast<ValueType>(n) / (n + ValueType{3}));
         }
 
@@ -89,19 +89,37 @@ namespace cml
 
 #include "../definitions.hpp"
 
-// static_assert(cml::is_equal<16>(0.0f, cml::sin(cml::radian<float>(cml::pi<float>))), "sin(TAUf)");
-// static_assert(cml::feq(0.0,  cml::sin(cml::radian<double>(cml::pi<double>))), "sin(TAU)");
-// static_assert(cml::feq(0.0l, cml::sin(cml::radian<long double>(cml::pi<long double>))), "sin(TAUl)");
-// 
-// static_assert(cml::is_equal(0.0f, cml::sin(cml::rad(cml::pi<float>))), "sin(PIf)");
-// static_assert(cml::is_equal(0.0,  cml::sin(cml::rad(cml::pi<double>))), "sin(PI)");
-// static_assert(cml::is_equal(0.0l, cml::sin(cml::rad(cml::pi<long double>))), "sin(PIl)");
-// 
-// static_assert(cml::is_equal(1.0f, cml::sin(cml::rad(cml::half_pi<float>))), "sin(PI/2f)");
-// static_assert(cml::is_equal(1.0,  cml::sin(cml::rad(cml::half_pi<double>))), "sin(PI/2)");
-// static_assert(cml::is_equal(1.0l, cml::sin(cml::rad(cml::half_pi<long double>))), "sin(PI/2l)");
+static_assert(cml::is_close_zero(0.0f, cml::sin(cml::radian<float>(cml::pi<float>))), "sin(TAUf)");
+static_assert(cml::is_close_zero(0.0,  cml::sin(cml::radian<double>(cml::pi<double>))), "sin(TAU)");
+static_assert(cml::is_close_zero(0.0l, cml::sin(cml::radian<long double>(cml::pi<long double>))), "sin(TAUl)");
 
-// sin(1) = 0.8414709848078965066525
-// static_assert(cml::is_equal(0.8414709848078965, cml::sin(cml::rad(1.0))), "sin(1.0)");
+static_assert(cml::is_close_zero(0.0f, cml::sin(cml::radian<float>(cml::pi<float>))), "sin(PIf)");
+static_assert(cml::is_close_zero(0.0,  cml::sin(cml::radian<double>(cml::pi<double>))), "sin(PI)");
+static_assert(cml::is_close_zero(0.0l, cml::sin(cml::radian<long double>(cml::pi<long double>))), "sin(PIl)");
+
+static_assert(cml::is_equal(1.0f, cml::sin(cml::radian<float>(cml::half_pi<float>))), "sin(PI/2f)");
+static_assert(cml::is_equal(1.0,  cml::sin(cml::radian<double>(cml::half_pi<double>))), "sin(PI/2)");
+static_assert(cml::is_equal(1.0l, cml::sin(cml::radian<long double>(cml::half_pi<long double>))), "sin(PI/2l)");
+
+// sin(1) == 0.8414709848078965066525
+static_assert(cml::is_equal(0.8414709848078965, cml::sin(cml::radian<double>(1.0))), "sin(1.0)");
+
+static_assert(cml::is_equal(cml::asin(cml::radian<float>(1.f)), cml::half_pi<float>), "asin(1.f)");
+static_assert(cml::is_equal(cml::asin(cml::radian<double>(1.0)), cml::half_pi<double>), "asin(1.0)");
+static_assert(cml::is_equal(cml::asin(cml::radian<long double>(1.l)), cml::half_pi<long double>), "asin(1.l)");
+
+static_assert(cml::is_equal(cml::asin(cml::radian<float>(0.5f)), cml::pi<float> / 6.f), "asin(0.5f)");
+static_assert(cml::is_equal(cml::asin(cml::radian<double>(0.5f)), cml::pi<double> / 6.f), "asin(0.5f)");
+static_assert(cml::is_equal(cml::asin(cml::radian<long double>(0.5f)), cml::pi<long double> / 6.f), "asin(0.5f)");
+
+// sinh(1) == 1.1752011936438014568823818505956008151557
+static_assert(cml::is_equal(cml::sinh(1.f), 1.1752011f), "sinh(1.f)");
+static_assert(cml::is_equal(cml::sinh(1.0), 1.1752011936438014), "sinh(1.0)");
+static_assert(cml::is_equal(cml::sinh(1.l), 1.17520119364380145688l), "sinh(1.l)");
+
+// asinh(0.5) == 0.4812118250596034474977589134243684231351843343856605
+static_assert(cml::is_equal(cml::asinh(0.5f), 0.4812118f), "asinh(0.5f)");
+static_assert(cml::is_equal(cml::asinh(0.5), 0.4812118250596034), "asinh(0.5f)");
+static_assert(cml::is_equal(cml::asinh(0.5l), 0.48121182505960344749l), "asinh(0.5f)");
 
 #endif

@@ -31,10 +31,10 @@ namespace cml
         template<typename ValueType>
         constexpr auto exp_impl(ValueType x, ValueType sum, ValueType n, std::size_t i, ValueType t) -> ValueType
         {
-            return feq(sum, sum + t / n) ? sum : exp_impl(x, sum + t / n, n * i, i + 1, t * x);
+            return is_equal(sum, sum + t / n) ? sum : exp_impl(x, sum + t / n, n * i, i + 1, t * x);
         }
     }
-    
+
     template<typename ValueType>
     constexpr auto exp(ValueType v) -> ValueType
     {

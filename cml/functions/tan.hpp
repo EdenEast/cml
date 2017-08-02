@@ -99,6 +99,41 @@ namespace cml
     template<typename ValueType>
     constexpr auto atanh(const ValueType v) -> ValueType
     {
-        return ValueType{1}/ValueType{2} * log(ValueType{1} + v) / (ValueType{1} - v);
+        return v > -1 && v < 1 ? (ValueType{1}/ValueType{2}) * log((ValueType{1} + v) / (ValueType{1} - v)) : throw std::runtime_error("atanh value is out of the range of [-1,1]");
     }
 }
+
+#ifdef CML_COMPILE_TEST_CASE
+
+#include "../definitions.hpp"
+
+static_assert(cml::is_close_zero(0.f, cml::tan(cml::radian<float>(cml::pi<float>))), "tan(0.f)");
+static_assert(cml::is_close_zero(0.0, cml::tan(cml::radian<double>(cml::pi<double>))), "tan(0.0");
+static_assert(cml::is_close_zero(0.l, cml::tan(cml::radian<long double>(cml::pi<long double>))), "tan(0.l)");
+
+static_assert(cml::is_equal(1.f, cml::tan(cml::radian<float>(cml::pi<float>/4.f))), "tan(pi/4)");
+static_assert(cml::is_equal(1.0, cml::tan(cml::radian<double>(cml::pi<double>/4.0))), "tan(pi/4)");
+static_assert(cml::is_equal(1.l, cml::tan(cml::radian<long double>(cml::pi<long double>/4.l))), "tan(pi/4)");
+
+// tan(1) == 1.557407724654902230506974807458360173087250772381520038383
+static_assert(cml::is_equal(cml::tan(cml::radian<double>(1)), 1.5574077246549022), "tan(1.0)");
+
+static_assert(cml::is_equal(cml::pi<float>/4.f, cml::atan(cml::radian<float>(1))), "atan(1.f)");
+static_assert(cml::is_equal(cml::pi<double>/4.0, cml::atan(cml::radian<double>(1))), "atan(1.f)");
+static_assert(cml::is_equal(cml::pi<long double>/4.l, cml::atan(cml::radian<long double>(1))), "atan(1.f)");
+
+static_assert(cml::is_equal(cml::pi<float>/4.f, cml::atan2(1.f, 1.f)), "atan2(1,1)");
+static_assert(cml::is_equal(cml::pi<double>/4.f, cml::atan2(1.0, 1.0)), "atan2(1,1)");
+static_assert(cml::is_equal(cml::pi<long double>/4.f, cml::atan2(1.l, 1.l)), "atan2(1,1)");
+
+// tanh(1) == 0.761594155955764888119458282604793590412768597257936551596
+static_assert(cml::is_equal(cml::tanh(1.f), 0.7615941f), "tanh(1)");
+static_assert(cml::is_equal(cml::tanh(1.0), 0.7615941559557648), "tanh(1)");
+static_assert(cml::is_equal(cml::tanh(1.l), 0.76159415595576488811l), "tanh(1)");
+
+// atanh(pi/4) == 1.059306170823243157230052319189942257188477765993631253524
+static_assert(cml::is_equal(cml::atanh(cml::pi<float>/4.f), 1.0593061f), "atanh(pi/4)");
+static_assert(cml::is_equal(cml::atanh(cml::pi<double>/4.f), 1.0593061708232431), "atanh(pi/4)");
+static_assert(cml::is_equal(cml::atanh(cml::pi<long double>/4.f), 1.05930617082324315723l), "atanh(pi/4)");
+
+#endif

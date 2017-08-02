@@ -10,7 +10,7 @@
 
 #define STD_COMPARE(RAD, CML, STD) \
     CHECK(cml::is_equal(CML(RAD), STD(static_cast<double>(RAD))))
-
+    
 template<typename T>
 void print_impl(std::ostream& os, T t)
 {
@@ -170,19 +170,10 @@ int main()
     STD_COMPARE(rad_value, cml::cosh, std::cosh);
     STD_COMPARE(rad_value, cml::tanh, std::tanh);
     
-    double other_value = cml::exp(2.0) - cml::cosh(2.0);
-    STD_COMPARE(other_value, cml::asinh, std::asinh);
-    STD_COMPARE(other_value, cml::acosh, std::acosh);
-    STD_COMPARE(other_value, cml::atanh, std::atanh);
-    
-    print<long double>(0.0, cml::sin(cml::radian<long double>(cml::pi<long double>)));
-    static_assert(cml::is_equal(0.0, cml::sin(cml::radian<double>(cml::pi<double>))));
-    
-//     std::cout << std::setprecision(std::numeric_limits<double>::digits10) << std::fixed <<
-//         0.0f << " | " << cml::sin(cml::radian<double>(cml::pi<double>)) << '\n';
-    
-    CHECK(cml::is_equal(cml::atan2(1.0, 1.0), std::atan2(1.0, 1.0)));
-
+    STD_COMPARE(cml::pi<double>, cml::asinh, std::asinh);
+    STD_COMPARE(cml::pi<double>, cml::acosh, std::acosh);
+    STD_COMPARE(cml::half_pi<double> / 2.0, cml::atanh, std::atanh);
+        
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;
 }

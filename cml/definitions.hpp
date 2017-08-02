@@ -184,7 +184,7 @@ namespace cml
     // Angle
     template<typename ValueType> using degree = implementation::angle<ValueType, implementation::angle_kind::degree>;
     template<typename ValueType> using radian = implementation::angle<ValueType, implementation::angle_kind::radian>;
-    
+
     using deg = implementation::degree<float>;
     using rad = implementation::radian<float>;
     using ddeg = implementation::degree<double>;
