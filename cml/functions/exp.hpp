@@ -31,7 +31,7 @@ namespace cml
         template<typename ValueType>
         constexpr auto exp_impl(ValueType x, ValueType sum, ValueType n, std::size_t i, ValueType t) -> ValueType
         {
-            return is_equal(sum, sum + t / n) ? sum : exp_impl(x, sum + t / n, n * i, i + 1, t * x);
+            return is_equal(sum, sum + t / n) ? sum : exp_impl(x, sum + t / n, n * static_cast<ValueType>(i), i + 1, t * x);
         }
     }
 
@@ -47,6 +47,6 @@ namespace cml
 // e = 2.718281828459045235360
 static_assert(cml::is_equal(2.718282f, cml::exp(1.0f)), "exp(1.0f)");
 static_assert(cml::is_equal(2.7182818284590454, cml::exp(1.0)), "exp(1.0)");
-static_assert(cml::is_equal(2.7182818284590452354l, cml::exp(1.0l)), "exp(1.0l)");  
+static_assert(cml::is_equal(2.7182818284590452354l, cml::exp(1.0l)), "exp(1.0l)");
 
 #endif

@@ -31,3 +31,18 @@ namespace cml
         return v < ValueType{0} ? -v : v;
     }
 }
+
+#ifdef CML_COMPILE_TEST_CASE
+
+static_assert(cml::abs( 1) == 1);
+static_assert(cml::abs(-1) == 1);
+static_assert(cml::abs(-0) == 0);
+
+static_assert(cml::abs( 1.f) == 1.f);
+static_assert(cml::abs(-1.f) == 1.f);
+static_assert(cml::abs( 1.0) == 1.0);
+static_assert(cml::abs(-1.0) == 1.0);
+static_assert(cml::abs( 1.l) == 1.l);
+static_assert(cml::abs(-1.l) == 1.l);
+
+#endif

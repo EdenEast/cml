@@ -41,13 +41,13 @@ namespace cml
         }
 
         template<typename ValueType>
-        constexpr ValueType log_e{2.71828182845904523536l};
+        constexpr ValueType log_e = static_cast<ValueType>(2.71828182845904523536l);
 
         template<typename ValueType>
         constexpr auto log_gt(const ValueType v) -> ValueType
         {
             auto e = log_e<ValueType>;
-            return v > ValueType{0.25} ? log_helper(v, ValueType{0}) : log_gt(v * e * e * e * e * e) - ValueType{5};
+            return v > static_cast<ValueType>(0.25) ? log_helper(v, ValueType{0}) : log_gt(v * e * e * e * e * e) - ValueType{5};
         }
 
         template<typename ValueType>
@@ -70,3 +70,15 @@ namespace cml
         return v >= ValueType{1024} ? implementation::log_lt(v) : implementation::log_gt(v);
     }
 }
+
+#ifdef CML_COMPILE_TEST_CASE
+
+static_assert(cml::is_equal(0.0f, cml::log(1.0f)), "log(1.0f)");
+static_assert(cml::is_equal(0.0,  cml::log(1.0)), "log(1.0)");
+static_assert(cml::is_equal(0.0l, cml::log(1.0l)), "log(1.0l)");
+static_assert(cml::is_equal(1.0f, cml::log(cml::exp(1.0f))), "log(ef)");
+static_assert(cml::is_equal(1.0,  cml::log(cml::exp(1.0))), "log(e)");
+static_assert(cml::is_equal(1.0l, cml::log(cml::exp(1.0l))), "log(el)");
+static_assert(cml::is_equal(0.0,  cml::log(1)), "log(1)");
+
+#endif

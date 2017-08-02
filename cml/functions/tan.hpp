@@ -36,7 +36,7 @@ namespace cml
             static_assert(cos(v) != 0, "cannot calculate tan when cos of value is 0.");
             return sin(v) / cos(v);
         }
-        
+
         template <typename ValueType>
         constexpr ValueType atan_term(ValueType x, std::size_t k)
         {
@@ -54,13 +54,13 @@ namespace cml
         {
             return sum + atan_product(x, n) == sum ? sum : atan_sum(x, sum + atan_product(x, n), n + 1);
         }
-        
+
         template<typename ValueType>
         constexpr auto atan_impl(const ValueType v) -> ValueType
         {
             return v / (ValueType{1} + v*v) * atan_sum(v, ValueType{1}, 1);
         }
-        
+
         template<typename ValueType>
         constexpr auto atan2_impl(ValueType x, ValueType y) -> ValueType
         {
