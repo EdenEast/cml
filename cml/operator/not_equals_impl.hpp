@@ -31,6 +31,7 @@ namespace cml::implementation
  #ifndef _MSC_VER
         return ((v1.components[Idxs] != v2.components[Idxs]) && ...);
  #else
+        using ar_t = int[];
         bool ret = true;
         (void)(ar_t{((ret = ret && v1.components[Idxs] != v2.components[Idxs]), 0)...});
         return ret;
@@ -43,6 +44,7 @@ namespace cml::implementation
 #ifndef _MSC_VER
         return ((v1.components[Idxs] != v2) && ...);
 #else
+        using ar_t = int[];
         bool ret = true;
         (void)(ar_t{((ret = ret && v1.components[Idxs] != v2), 0)...});
         return ret;
@@ -55,6 +57,7 @@ namespace cml::implementation
 #ifndef _MSC_VER
         return ((v1 != v2.components[Idxs]) && ...);
 #else
+        using ar_t = int[];
         bool ret = true;
         (void)(ar_t{((ret = ret && v1 != v2.components[Idxs]), 0)...});
         return ret;

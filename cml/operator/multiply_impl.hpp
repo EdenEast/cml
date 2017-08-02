@@ -35,6 +35,7 @@ namespace cml::implementation
 #ifndef _MSC_VER
         return ((v1.components[CommonIdxs + y * DimX1] * v2.components[x + CommonIdxs * DimX2]) + ...);
 #else
+        using ar_t = int[];
         VType ret = VType(0);
         (void)(ar_t {((ret += v1.components[CommonIdxs + y * DimX1] * v2.components[x + CommonIdxs * DimX2]), 0)...});
         return ret;
