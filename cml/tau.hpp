@@ -22,20 +22,19 @@
 
 #pragma once
 
+#include "fixed_point.hpp"
+#include <type_traits>
+
 namespace cml
 {
     template<typename ValueType>
-    constexpr auto factorial(const ValueType& n) -> ValueType
-    {
-        return n > 0 ? n * factorial(n - ValueType{1}) : ValueType{1};
-    }
+    constexpr ValueType tau = ValueType{6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429L};
+
+    // tau / 2
+    template<typename ValueType>
+    constexpr ValueType pi = ValueType{3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482L};
+
+    // tau / 4
+    template<typename ValueType>
+    constexpr ValueType half_pi = pi<ValueType> / ValueType{2};
 }
-
-#ifdef CML_COMPILE_TEST_CASE
-
-#include "../equality.hpp"
-
-static_assert(cml::factorial(5) == 120);
-static_assert(cml::factorial(5.0) == 120.0);
-
-#endif

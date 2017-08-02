@@ -21,21 +21,32 @@
 //
 
 #pragma once
+#include "../equality.hpp"
+#include <cstdint>
 
 namespace cml
 {
-    template<typename ValueType>
-    constexpr auto factorial(const ValueType& n) -> ValueType
+    namespace implementation
     {
-        return n > 0 ? n * factorial(n - ValueType{1}) : ValueType{1};
+        template<typename ValueType>
+        constexpr auto exp_impl(ValueType x, ValueType sum, ValueType n, std::size_t i, ValueType t) -> ValueType
+        {
+            return is_equal(sum, sum + t / n) ? sum : exp_impl(x, sum + t / n, n * static_cast<ValueType>(i), i + 1, t * x);
+        }
+    }
+
+    template<typename ValueType>
+    constexpr auto exp(ValueType v) -> ValueType
+    {
+        return implementation::exp_impl(v, ValueType{1}, ValueType{1}, 2, v);
     }
 }
 
 #ifdef CML_COMPILE_TEST_CASE
 
-#include "../equality.hpp"
-
-static_assert(cml::factorial(5) == 120);
-static_assert(cml::factorial(5.0) == 120.0);
+// e = 2.718281828459045235360
+static_assert(cml::is_equal(2.718282f, cml::exp(1.0f)), "exp(1.0f)");
+static_assert(cml::is_equal(2.7182818284590454, cml::exp(1.0)), "exp(1.0)");
+static_assert(cml::is_equal(2.7182818284590452354l, cml::exp(1.0l)), "exp(1.0l)");
 
 #endif

@@ -22,20 +22,37 @@
 
 #pragma once
 
-namespace cml
+#include "tau.hpp"
+
+namespace cml::implementation
 {
-    template<typename ValueType>
-    constexpr auto factorial(const ValueType& n) -> ValueType
+    enum class angle_kind
     {
-        return n > 0 ? n * factorial(n - ValueType{1}) : ValueType{1};
-    }
+        degree,
+        radian
+    };
+
+    template<typename ValueType, angle_kind From, angle_kind To>
+    struct angle_convert_factor
+    {
+        static constexpr ValueType factor = ValueType(1);
+    };
+
+    template<typename ValueType, angle_kind A>
+    struct angle_convert_factor<ValueType, A, A>
+    {
+        static constexpr ValueType factor = ValueType(1);
+    };
+
+    template<typename ValueType>
+    struct angle_convert_factor<ValueType, angle_kind::degree, angle_kind::radian>
+    {
+        static constexpr ValueType factor = tau<ValueType> / ValueType(360);
+    };
+
+    template<typename ValueType>
+    struct angle_convert_factor<ValueType, angle_kind::radian, angle_kind::degree>
+    {
+        static constexpr ValueType factor = ValueType(360) / tau<ValueType>;
+    };
 }
-
-#ifdef CML_COMPILE_TEST_CASE
-
-#include "../equality.hpp"
-
-static_assert(cml::factorial(5) == 120);
-static_assert(cml::factorial(5.0) == 120.0);
-
-#endif

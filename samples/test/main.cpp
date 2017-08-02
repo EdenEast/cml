@@ -2,10 +2,36 @@
 #define CML_COMPILE_TEST_CASE 1
 #include <cml/cml.hpp>
 #include <math.h>
+#include <iostream>
+#include <iomanip>
 
 #define STRING(STR) #STR
 #define CHECK(expr) if (!(expr)) {printf("Check failed: %s\n", STRING(expr));}
 
+#define STD_COMPARE(RAD, CML, STD) \
+    CHECK(cml::is_equal(CML(RAD), STD(static_cast<double>(RAD))))
+    
+template<typename T>
+void print_impl(std::ostream& os, T t)
+{
+    os << t << '\n';
+}
+
+template<typename T, typename U, typename... A>
+void print_impl(std::ostream& os, T t, U u, A... a)
+{
+    os << t << ',' << ' ';
+    print_impl(os, u, a...);
+}
+
+template<typename Precision, typename T, typename... A>
+void print(T t, A... a)
+{
+    std::ostream& os = std::cout;
+    os << std::setprecision(std::numeric_limits<Precision>::digits10) << std::fixed;
+    print_impl(os, t, a...);
+    
+}
 
 int main()
 {
@@ -126,10 +152,28 @@ int main()
 
     CHECK(cml::is_equal(cml::sqrt(5.0), std::sqrt(5.0)));
     CHECK(cml::sqrt(5.0f) == std::sqrt(5.0f));
-    
+
     CHECK(std::sqrt(5.0) == cml::sqrt(5.0));
     CHECK(std::sqrt(5.f) == cml::sqrt(5.f));
 
+    auto rad_value = 30.0;
+    auto rad = cml::drad(cml::ddeg(rad_value));
+    STD_COMPARE(rad, cml::sin, std::sin);
+    STD_COMPARE(rad, cml::cos, std::cos);
+    STD_COMPARE(rad, cml::tan, std::tan);
+
+    STD_COMPARE(rad, cml::asin, std::asin);
+    STD_COMPARE(rad, cml::acos, std::acos);
+    STD_COMPARE(rad, cml::atan, std::atan);
+
+    STD_COMPARE(rad_value, cml::sinh, std::sinh);
+    STD_COMPARE(rad_value, cml::cosh, std::cosh);
+    STD_COMPARE(rad_value, cml::tanh, std::tanh);
+    
+    STD_COMPARE(cml::pi<double>, cml::asinh, std::asinh);
+    STD_COMPARE(cml::pi<double>, cml::acosh, std::acosh);
+    STD_COMPARE(cml::half_pi<double> / 2.0, cml::atanh, std::atanh);
+        
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;
 }

@@ -28,16 +28,22 @@
 
 namespace cml
 {
-    template<typename VT, typename ST>
-    constexpr auto is_close(const VT& a, const ST& b)
+    template<int ulp = 1, typename VT, typename ST>
+    constexpr bool is_equal(const VT v1, const ST v2)
     {
-        return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * max(abs(a), abs(b));
+        return abs(v1 - v2) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon() * abs(v1 + v2) * ulp
+            || abs(v1 - v2) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::min();
     }
-    
-    template<int ulp = 1, typename ValueType>
-    constexpr bool is_equal(const ValueType v1, const ValueType v2)
+
+    template<typename VT, typename ST>
+    constexpr bool is_close_zero(const VT a, const ST b)
     {
-        return abs(v1 - v2) <= std::numeric_limits<ValueType>::epsilon() * abs(v1 + v2) * ulp
-            || abs(v1 - v2) <= std::numeric_limits<ValueType>::min();
+        return abs(a - b) <= std::numeric_limits<std::conditional_t<sizeof(VT) <= sizeof(ST), VT, ST>>::epsilon();
+    }
+
+    template<typename VT>
+    constexpr bool is_close_zero(const VT v)
+    {
+        return is_close_zero(v, VT{0});
     }
 }
