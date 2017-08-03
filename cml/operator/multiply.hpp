@@ -33,7 +33,9 @@ namespace cml::implementation
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, typename SType>
     constexpr auto operator * (const matrix<DimX, DimY, VType, Kind>& v1, SType&& v2) -> auto
     {
-        if constexpr(std::is_arithmetic<SType>::value || is_fixed_point<SType>::value || is_reference<SType>::value || std::is_same<SType, VType>::value)
+        if constexpr(Kind == matrix_kind::quaternion)
+            return quat_mul(v1, v2);
+        else if constexpr(std::is_arithmetic<SType>::value || is_fixed_point<SType>::value || is_reference<SType>::value || std::is_same<SType, VType>::value)
             return matrix_ms_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
         else
             return matrix_mm_mul(v1, v2);
