@@ -94,18 +94,18 @@ namespace cml::implementation
 #endif
         return v1;
     }
-    
+
     template<typename QType>
     constexpr quaternion<QType> quat_qq_mul(const quaternion<QType>& v1, const quaternion<QType>& v2)
     {
         return quaternion<QType>(
-            v1._<'w'>() * v2._<'x'>() + v1._<'x'>() * v2._<'w'>() + v1._<'y'>() * v2._<'z'>() - v1._<'z'>() * v2._<'y'>(),
-            v1._<'w'>() * v2._<'y'>() - v1._<'x'>() * v2._<'z'>() + v1._<'y'>() * v2._<'w'>() + v1._<'z'>() * v2._<'x'>(),
-            v1._<'w'>() * v2._<'z'>() + v1._<'x'>() * v2._<'y'>() - v1._<'y'>() * v2._<'x'>() + v1._<'z'>() * v2._<'w'>(),
-            v1._<'w'>() * v2._<'w'>() - v1._<'x'>() * v2._<'x'>() - v1._<'y'>() * v2._<'y'>() - v1._<'z'>() * v2._<'z'>()
+            (v1.components[3] * v2.components[0] + v1.components[0] * v2.components[3] + v1.components[1] * v2.components[2] - v1.components[2] * v2.components[1]),
+            (v1.components[3] * v2.components[1] - v1.components[0] * v2.components[2] + v1.components[1] * v2.components[3] + v1.components[2] * v2.components[0]),
+            (v1.components[3] * v2.components[2] + v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0] + v1.components[2] * v2.components[3]),
+            (v1.components[3] * v2.components[3] - v1.components[0] * v2.components[0] - v1.components[1] * v2.components[1] - v1.components[2] * v2.components[2])
         );
     }
-    
+
     template<typename QType, typename VType>
     constexpr auto quat_qv_mul(const quaternion<QType>& q, VType&& v)
     {
@@ -114,26 +114,34 @@ namespace cml::implementation
         constexpr auto sp = q.scalar_part();
         return QType(QType(2) * dot(vp, v) * vp + (sp*sp - dot(vp, vp)) * v + QType(2) * sp * cross(vp, v));
     }
-    
+
     template<typename QType, typename SType>
     constexpr auto quat_qs_mul(const quaternion<QType>& q, SType&& s)
     {
         auto axis = q.scalar_part() > 0 ? q.vector_part() : -q.vector_part();
         auto angle = SType(2) * atan2(normalize(axis), q.scalar_part() > 0 ? q.scalar_part() : -q.scalar_part());
+        angle *= s;
+        return quaternion<QType>(normalize(axis) * sin(SType{0.5} * angle), cos(SType{0.5} * angle));
     }
-    
-    template<typename QType, typename SType>
-    constexpr auto quat_mul(const QType& v1, SType&& v2) -> auto 
+
+    template<typename VType, typename SType>
+    constexpr auto quat_mul(const VType& v1, SType&& v2) -> auto
     {
-        if constexpr(is_quaternion<SType>::value)
+        // guarentied that one of the values will be a quat just not sure what one is.
+        if constexpr(is_quaternion<VType>::value && is_quaternion<SType>::value)
             return quat_qq_mul(v1, v2);
-        else if constexpr(is_vector<SType>::value)
+        else if constexpr(is_vector<VType>::value || is_vector<SType>::value)
         {
-            constexpr auto dim = matrix_traits<SType>::dimx > matrix_traits<SType>::dimy ? matrix_traits<SType>::dimx : matrix_traits<SType>::dimy;
+            // since we know that one if the values is a quaternion we just have to figure out what one is the vector
+            using vector_type = std::conditional_t<is_vector<VType>::value, VType, SType>;
+            constexpr auto dim = matrix_traits<vector_type>::dimx > matrix_traits<vector_type>::dimy ? matrix_traits<vector_type>::dimx : matrix_traits<vector_type>::dimy;
             static_assert(dim == 3, "can only multiply a quaternion by a 3 component vector");
             return quat_qv_mul(v1, v2);
         }
         else
+        {
+            // if the other value is not a quaternion or a vecetor then the last value is a scalar
             return quat_qs_mul(v1, v2);
+        }
     }
 }

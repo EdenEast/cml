@@ -44,7 +44,10 @@ namespace cml::implementation
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind>
     constexpr auto operator * (VType v1, const matrix<DimX, DimY, VType, Kind>& v2) -> auto
     {
-        return matrix_sm_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
+        if constexpr(Kind == matrix_kind::quaternion)
+            return quat_mul(v1, v2);
+        else
+            return matrix_sm_mul(std::make_index_sequence<DimX * DimY>{}, v1, v2);
     }
 
     template<typename VType, size_t DimX, size_t DimY, matrix_kind Kind, typename SType>

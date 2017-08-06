@@ -33,6 +33,12 @@ void print(T t, A... a)
     
 }
 
+template<typename T>
+constexpr bool testing(T v)
+{
+    return cml::is_quaternion<T>::value;
+}
+
 int main()
 {
     static_assert(cml::ivec4(cml::ivec3(1, 6, 1), 6) == cml::ivec4(1, 6, 1, 6));
@@ -97,7 +103,11 @@ int main()
 
     static_assert(cml::imat<3, 2>{2, 3, -1, 6, 1, -2} * cml::imat<2, 3>{4, -5, -3, 0, 1, 2} == cml::imat<2, 2>{-2, -12, 19, -34});
 
-
+    // quaternion
+//     static_assert(cml::is_equal(cml::quat(-28, 4, 6, 8), cml::quat(1, 2, 3, 4) * cml::quat(1, 2, 3, 4)));
+    
+    auto q = cml::quat(1, 2, 3, 4) * cml::quat(1, 2, 3, 4);
+    std::cout << testing(q) << '\n';
 
     // fixed
     static_assert(cml::f88(2.5).data == 0x0280);
