@@ -1,7 +1,7 @@
 
 #define CML_COMPILE_TEST_CASE 1
 #include <cml/cml.hpp>
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <iomanip>
 
@@ -10,7 +10,7 @@
 
 #define STD_COMPARE(RAD, CML, STD) \
     CHECK(cml::is_equal(CML(RAD), STD(static_cast<double>(RAD))))
-    
+
 template<typename T>
 void print_impl(std::ostream& os, T t)
 {
@@ -30,7 +30,7 @@ void print(T t, A... a)
     std::ostream& os = std::cout;
     os << std::setprecision(std::numeric_limits<Precision>::digits10) << std::fixed;
     print_impl(os, t, a...);
-    
+
 }
 
 int main()
@@ -169,11 +169,11 @@ int main()
     STD_COMPARE(rad_value, cml::sinh, std::sinh);
     STD_COMPARE(rad_value, cml::cosh, std::cosh);
     STD_COMPARE(rad_value, cml::tanh, std::tanh);
-    
+
     STD_COMPARE(cml::pi<double>, cml::asinh, std::asinh);
     STD_COMPARE(cml::pi<double>, cml::acosh, std::acosh);
     STD_COMPARE(cml::half_pi<double> / 2.0, cml::atanh, std::atanh);
-        
+
     // should return 175
     return cml::ivec2(v._<'yx'>().unsafe_cast<int32_t>()).x;
 }
