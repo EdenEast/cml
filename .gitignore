@@ -1,74 +1,57 @@
-# Compiled source #
-###################
-*.com
+#
+# Compiled soures
+#
+*.a
 *.class
+*.com
 *.dll
 *.exe
 *.o
-*.so
-*.a
 *.pch
+*.so
 
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
-#*.7z
-#*.dmg
-#*.gz
-#*.iso
-#*.jar
-#*.rar
-#*.tar
-#*.zip
+#
+# Packages
+#
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
 
-# Logs and databases #
-######################
+#
+# Logs and database
+#
 *.log
 *.sql
 *.sqlite
 
-# backup copies (emacs/KATE FTW) #
-##################################
-*~
-*#
-*.bak
-.*.swp
-.*.kate-swp
-
-# OS generated files #
-######################
+#
+# OS generated files
+#
+*.lock
 .DS_Store
 .DS_Store?
-._*
-*.lock
 .Spotlight-V100
 .Trashes
-ehthumbs.db
 Thumbs.db
-.directory
 
-# build dir #
-#############
-
+#
+# Build dir
+#
 build/
 build-clang/
 
-# kdevelop files/folders #
-##########################
-
+#
+# Visual studio / kdevelop
+#
+*.kate-swp
 *.kdev4
+*.opensdf
+*.sdf
 .kdev4/
-.kdev_include_paths
-
-# doc folders #
-###############
-
-documentation/*/*
-
-# screenshots #
-###############
-
-
-screenshot*.png
-
+.vs/
+.vscode/
