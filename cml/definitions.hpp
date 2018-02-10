@@ -112,6 +112,9 @@ namespace cml
     using uf0032vec4 = vector<4, uf0032>;
 
     // Matrix
+    template<size_t DimX, size_t DimY, typename ValueType>
+    using matrix = implementation::matrix<DimX, DimY, ValueType, implementation::matrix_kind::normal>;
+    
     template<size_t X, size_t Y>
     using mat = implementation::matrix<X, Y, float, implementation::matrix_kind::normal>;
     template<size_t X, size_t Y>
