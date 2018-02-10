@@ -2,37 +2,50 @@
 ## CMAKE file for neam projects
 ##
 
-# general flags
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(PROJ_FLAGS "${PROJ_FLAGS} -O0 -g3")
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-  set(PROJ_FLAGS "${PROJ_FLAGS} -DNDEBUG ")
-elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-  set(PROJ_FLAGS "${PROJ_FLAGS} -DNDEBUG ")
-endif()
-
-# some gcc/clang flags
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  set(PROJ_FLAGS "${PROJ_FLAGS} -std=c++1z -Wall -Wextra -Wno-unused-function -Wno-multichar")
-
+function(set_compile_flags target)
+  # general flags
   if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(PROJ_FLAGS "${PROJ_FLAGS} -Og -fno-inline")
+    target_compile_options(${target} INTERFACE "-O0")
+    target_compile_options(${target} INTERFACE "-g3")
   elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(PROJ_FLAGS "${PROJ_FLAGS} -O3 -finline-limit=100")
+    target_compile_options(${target} INTERFACE "-DNDEBUG")
   elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-    set(PROJ_FLAGS "${PROJ_FLAGS} -Os ")
+    target_compile_options(${target} INTERFACE "-DNDEBUG")
   endif()
 
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-  set(PROJ_FLAGS "${PROJ_FLAGS} -std=c++1z -Wall -Wextra -Wno-unused-function -Wno-multichar")
+  # some gcc/clang flags
+  if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    target_compile_options(${target} INTERFACE "-std=c++1z")
+    target_compile_options(${target} INTERFACE "-Wall")
+    target_compile_options(${target} INTERFACE "-Wextra")
+    target_compile_options(${target} INTERFACE "-Wno-unused-function")
+    target_compile_options(${target} INTERFACE "-Wno-multichar")
 
-  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(PROJ_FLAGS "${PROJ_FLAGS}")
-  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(PROJ_FLAGS "${PROJ_FLAGS} -O3")
-  elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-    set(PROJ_FLAGS "${PROJ_FLAGS} -Oz")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+      target_compile_options(${target} INTERFACE "-Og")
+      target_compile_options(${target} INTERFACE "-fno-inline")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+      target_compile_options(${target} INTERFACE "-O3")
+      target_compile_options(${target} INTERFACE "-finline-limit=100")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+      target_compile_options(${target} INTERFACE "-Os")
+    endif()
+
+  elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    target_compile_options(${target} INTERFACE "-std=c++1z")
+    target_compile_options(${target} INTERFACE "-Wall")
+    target_compile_options(${target} INTERFACE "-Wextra")
+    target_compile_options(${target} INTERFACE "-Wno-unused-function")
+    target_compile_options(${target} INTERFACE "-Wno-multichar")
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+      target_compile_options(${target} INTERFACE "-O3")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+      target_compile_options(${target} INTERFACE "-Oz")
+    endif()
+
+  elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    target_compile_options(${target} INTERFACE "/std:c++latest")
   endif()
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-  set(PROJ_FLAGS "${PROJ_FLAGS} /std:c++latest")
-endif()
+endfunction()
