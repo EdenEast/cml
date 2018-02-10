@@ -52,9 +52,12 @@ There are also lots of functions that are implemented. You can find them under "
 
 # Compiler support
 
-Cml is a header only library requiring the latest and greatest features of c++17.
+Cml is a header only library requiring the latest and greatest features of c++17. Cml has a minimum requirement
+for compilers of:
 
-- cml is written for support of clang, gcc, and msvc (what are the min versions?)
+- gcc 7.1+
+- clang 4.0+
+- msvc 15.3+
 
 # Building and installing with CMake
 
