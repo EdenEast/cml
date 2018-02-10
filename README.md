@@ -20,7 +20,7 @@
 void foo()
 {
     cml::matrix<3, 3, int32_t> identity_mat(1, 0, 0, 0, 1, 0, 0, 0, 1);
-    
+
     // can be also initialized by passing vectors. Note that there are already useful
     // defines for common use cases. For the complete list of defineds see "cml/definitions.hpp"
     identity_mat = cml::imat3(cml::ivec3(1, 0, 0), cml::ivec3(0, 1, 0), cml::ivec3(0, 0, 1));
@@ -37,7 +37,7 @@ void foo()
     assert(value == cml::ivec2(1, 4));
 
     // Vector components can also be accessed from their components. This works up to vector 4
-    // you can use one of either: xyzw, rgba, stuv 
+    // you can use one of either: xyzw, rgba, stuv
     auto vx = value.x;
     assert(vx == value.r);
     assert(vx == value.s);
@@ -58,6 +58,9 @@ for compilers of:
 - gcc 7.1+
 - clang 4.0+
 - msvc 15.3+
+
+Not that msvc's support for c++17 features is not the best and sometimes gives interal compiler errors. Development
+of cml was done using the preview version of msvc 2017. I have had mixed success with the non-preview version.
 
 # Building and installing with CMake
 
