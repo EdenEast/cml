@@ -35,7 +35,7 @@ target_include_directories(libcml INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>
 )
-set_compile_flags(libcml)
+set_compile_flags(libcml INTERFACE)
 
 # Create a custom target for ide's
 file(GLOB_RECURSE cml_sources "${CMAKE_CURRENT_SOURCE_DIR}/cml/*.hpp")
