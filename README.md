@@ -65,6 +65,7 @@ of cml was done using the preview version of msvc 2017. I have had mixed success
 # Building and installing with CMake
 
 Cml is a header only library and is designed to be included as a submodule into your project
+
 ```bash
 mkdir external
 git submodule add https://github.com/cruizemissile/cml external/cml
@@ -73,14 +74,14 @@ git submodule add https://github.com/cruizemissile/cml external/cml
 Now add cml as a target include directory. If you are using CMake this can easily be done.
 
 ```cmake
-cmake_minimum_version(VERSION 3.1)
+cmake_minimum_version(VERSION 3.8)
 
 # ...
 
 add_subdirectory(external/cml)
 
 add_executable(foo)
-target_link_library(foo libcml)
+target_link_library(foo ${CML_LIB})
 ```
 
 # Development
